@@ -66,6 +66,7 @@ func deleteRoomInfoFromRedis(roomID string, userIDString string) {
 	conn.Send("DEL", gconst.LobbyRoomNumberTablePrefix+roomNumberString)
 	conn.Send("HDEL", gconst.LobbyUserTablePrefix+userIDString, "roomID")
 	conn.Send("SREM", gconst.LobbyRoomTableSet, roomID)
+	conn.Send("DEL", gconst.LobbyRoomStatePrefix+roomID)
 
 	_, err = conn.Do("EXEC")
 	if err != nil {
