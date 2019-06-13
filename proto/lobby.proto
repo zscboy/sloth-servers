@@ -376,6 +376,7 @@ message MsgLoginReply
 	required int32 result = 1; // 微信登录返回结果，参见LoginError
 	optional string token = 2;  // token
 	optional UserInfo userInfo = 3; //用户信息
+	optional RoomInfo lastRoomInfo = 4; // 用户最后所在的房间
 }
 
 // 客户端登录信息
@@ -415,6 +416,7 @@ message MsgQuicklyLoginReply
 	optional string token = 2;  // token
 	optional string account = 3; // 账号
 	optional UserInfo userInfo = 4; //用户信息
+	optional RoomInfo lastRoomInfo = 5; // 用户最后所在的房间
 }
 
 enum WebsocketConnectError{

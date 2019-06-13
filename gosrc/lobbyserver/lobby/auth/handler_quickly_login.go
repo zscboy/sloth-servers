@@ -103,6 +103,9 @@ func handlerQuicklyLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 		userInfo.UserID = &userID
 	}
 
+	roomUtil := lobby.RoomUtil()
+	lastRoomInfo := roomUtil.LoadLastRoomInfo(userID)
+
 	// 生成token给客户端
 	tk := lobby.GenTK(userID)
 
@@ -112,6 +115,7 @@ func handlerQuicklyLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 	loginReply.Token = &tk
 	loginReply.UserInfo = userInfo
 	loginReply.Account = &account
+	loginReply.LastRoomInfo = lastRoomInfo
 	log.Println(loginReply)
 	replyQuicklyLogin(w, loginReply)
 

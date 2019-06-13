@@ -166,6 +166,9 @@ func handlerWxLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 		updateWxUserInfo(userInfo, clientInfo)
 	}
 
+	roomUtil := lobby.RoomUtil()
+	lastRoomInfo := roomUtil.LoadLastRoomInfo(userID)
+
 	// 生成token给客户端
 	tk := lobby.GenTK(userID)
 
@@ -174,5 +177,6 @@ func handlerWxLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	loginReply.Result = &errCode
 	loginReply.Token = &tk
 	loginReply.UserInfo = userInfo
+	loginReply.LastRoomInfo = lastRoomInfo
 	replyWxLogin(w, loginReply)
 }
