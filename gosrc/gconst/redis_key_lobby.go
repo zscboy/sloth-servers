@@ -97,4 +97,7 @@ const (
 
 	// LobbyShareText 分享显示的文本，格式:l:st:sence
 	LobbyShareText = "l:st:%d"
+
+	// LobbyRoomStatePrefix 保存房间状态
+	LobbyRoomStatePrefix = "l:rs:"
 )

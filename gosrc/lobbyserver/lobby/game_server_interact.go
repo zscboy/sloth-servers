@@ -27,7 +27,25 @@ func onNotifyMessage(msgBag *gconst.SSMsgBag) {
 }
 
 func onRoomStateNotify(msgBag *gconst.SSMsgBag) {
+	var roomNotify = &gconst.SSMsgRoomStateNotify{}
+	err := proto.Unmarshal(msgBag.GetParams(), roomNotify)
+	if err != nil {
+		log.Println("onReturnDiamondNotify, err:", err)
+		return
+	}
 
+	var msgIDList = &gconst.SSMsgUserIDList{}
+	msgIDList.UserIDs = roomNotify.GetUserIDs()
+	buf, err := proto.Marshal(msgIDList)
+	if err != nil {
+		log.Println("writeHandEnd2Redis proto error:", err)
+		return
+	}
+
+	conn := pool.Get()
+	defer conn.Close()
+
+	conn.Do("HMSET", gconst.LobbyRoomStatePrefix+roomNotify.GetRoomID(), "state", roomNotify.GetState(), "hrStartted", roomNotify.GetHandStartted(), "players", buf)
 }
 
 func onReturnDiamondNotify(msgBag *gconst.SSMsgBag) {

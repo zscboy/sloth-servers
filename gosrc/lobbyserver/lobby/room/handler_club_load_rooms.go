@@ -30,7 +30,7 @@ func loadClubRooms(clubID string) []*lobby.RoomInfo {
 
 	conn := lobby.Pool().Get()
 	defer conn.Close()
-	// 现在限制每个牌友群只可创建50个牌友群，多了需要批量拉取
+	// 现在限制每个牌友群只可创建50个房间，多了需要批量拉取
 	roomIDs, err := redis.Strings(conn.Do("SMEMBERS", gconst.LobbyClubRoomSetPrefix+clubID))
 	if err != nil {
 		log.Error("Load club rooms from redis error:", err)
@@ -42,7 +42,9 @@ func loadClubRooms(clubID string) []*lobby.RoomInfo {
 	conn.Send("MULTI")
 	for _, roomID := range roomIDs {
 		conn.Send("HMGET", gconst.LobbyRoomTablePrefix+roomID, "roomNumber", "gameServerID", "roomConfigID", "timeStamp", "lastActiveTime")
-		conn.Send("HMGET", gconst.GameServerRoomTablePrefix+roomID, "players", "state", "hrStartted")
+		conn.Send("HMGET", gconst.LobbyRoomStatePrefix+roomID, "players", "state", "hrStartted")
+		// conn.Do("HMGET", gconst.LobbyRoomStatePrefix+roomID, "state",  "hrStartted", roomNotify.GetHandStartted(), "players", buf)
+
 	}
 
 	values, err := redis.Values(conn.Do("EXEC"))
