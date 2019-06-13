@@ -118,8 +118,8 @@ message MsgCreateRoomReq
 // 用户信息
 message UserProfile {
 	required string userID = 1; // 用户ID
-	optional string userName = 2; // 用户名
-	optional string nickName = 3; // 用户昵称
+	optional string nickName = 2; // 用户昵称
+	optional string avatarURL = 3; // 头像
 }
 
 //玩家房间信息

@@ -23,7 +23,7 @@ func loadUsersProfile(userIDs []string) []*lobby.UserProfile {
 
 	conn.Send("MULTI")
 	for _, userID := range userIDs {
-		conn.Send("HMGET", gconst.LobbyUserTablePrefix+userID, "userName", "nick")
+		conn.Send("HMGET", gconst.LobbyUserTablePrefix+userID, "nick", "avatarUrl")
 	}
 
 	values, err := redis.Values(conn.Do("EXEC"))
@@ -37,13 +37,13 @@ func loadUsersProfile(userIDs []string) []*lobby.UserProfile {
 		if err != nil {
 			continue
 		}
-		userName := fileds[0]
-		nickName := fileds[1]
+		nickName := fileds[0]
+		avatarURL := fileds[1]
 		userID := userIDs[index]
 		userProfile := &lobby.UserProfile{}
 		userProfile.UserID = &userID
-		userProfile.UserName = &userName
 		userProfile.NickName = &nickName
+		userProfile.AvatarURL = &avatarURL
 
 		userProfiles = append(userProfiles, userProfile)
 	}
