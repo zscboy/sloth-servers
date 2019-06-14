@@ -132,7 +132,7 @@ enum ClubRoleType
 
 
 16. 拉取管理员信息列表
-url: /lobby/uuid/loadManager?tk=xxx&clubID=xxx
+url: /lobby/uuid/loadClubMgrs?tk=xxx&clubID=xxx
 tk 是token
 clubID 是牌友群ID
 
