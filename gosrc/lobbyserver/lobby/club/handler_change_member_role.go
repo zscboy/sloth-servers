@@ -50,7 +50,7 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	// 只有群主可以设管理员
 	if myRole != int32(ClubRoleType_CRoleTypeCreator) {
 		log.Printf("User %s not club %s creator, can change club member role", userID, clubID)
-		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_Or_Mgr_Can_Set)
+		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_And_Mgr_Can_Set)
 		return
 	}
 

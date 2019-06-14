@@ -75,7 +75,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	role = mySQLUtil.LoadUserClubRole(userID, clubID)
 	if role != int32(ClubRoleType_CRoleTypeCreator) && role != int32(ClubRoleType_CRoleTypeMgr) {
 		log.Printf("onJoinApprove, userID %s not creator and mgr %s\n", userID, clubInfo.GetCreatorUserID())
-		sendGenericError(w, ClubOperError_CERR_Only_Creator_Or_Mgr_Can_Approve)
+		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_Approve)
 		return
 	}
 

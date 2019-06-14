@@ -50,7 +50,7 @@ func onSetName(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	role := mySQLUtil.LoadUserClubRole(userID, clubID)
 	// 只有群主和管理员可以设置群
 	if role != int32(ClubRoleType_CRoleTypeCreator) && role != int32(ClubRoleType_CRoleTypeMgr) {
-		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_Or_Mgr_Can_Set)
+		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_And_Mgr_Can_Set)
 		return
 	}
 

@@ -89,7 +89,7 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 	// 只有群主和管理员才可以踢人
 	if myRole != int32(ClubRoleType_CRoleTypeCreator) && myRole != int32(ClubRoleType_CRoleTypeMgr) {
 		log.Printf("onKickOut, club:%s, userID:%s, only creator can kickout member\n", clubID, userID)
-		sendGenericError(w, ClubOperError_CERR_Only_Creator_Or_Mgr_Can_KickOut)
+		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_KickOut)
 		return false
 	}
 
@@ -101,7 +101,7 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 
 	// 被踢的人只能是普通成员
 	if memberRole != int32(ClubRoleType_CRoleTypeMember) {
-		sendGenericError(w, ClubOperError_CERR_Only_Creator_Or_Mgr_Can_KickOut)
+		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_KickOut)
 		return false
 	}
 
