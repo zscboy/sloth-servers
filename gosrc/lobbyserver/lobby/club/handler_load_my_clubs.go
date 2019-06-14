@@ -64,27 +64,32 @@ func onLoadMyClubs(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 			defer conn.Close()
 
 			conn.Send("MULTI")
-			// 表明已经有俱乐部不存在，因此需要删除掉
+
 			for _, cinfo := range msgClubInfos {
 				clubID := cinfo.BaseInfo.GetClubID()
 				conn.Send("SCARD", gconst.LobbyClubUnReadEventUserSetPrefix+clubID+":"+userID)
+				conn.Send("SMEMBERS", gconst.LobbyClubManager+clubID)
 			}
 
-			ints, err := redis.Ints(conn.Do("EXEC"))
+			vs, err := redis.Values(conn.Do("EXEC"))
 
 			if err == nil {
 				for i, cinfo := range msgClubInfos {
+					countEvent, _ := redis.Int(vs[i * 2], nil)
 					hasUnReadEvents := false
-					if ints[i] > 0 {
+					if countEvent > 0 {
 						hasUnReadEvents = true
 					}
 					cinfo.HasUnReadEvents = &hasUnReadEvents
+					cinfo.Managers, _ = redis.Strings(vs[i* 2 + 1], nil)
 				}
 			}
 		}
 
 		reply.Clubs = msgClubInfos
 	}
+
+	log.Println("reply:", reply)
 
 	b, err := proto.Marshal(reply)
 	if err != nil {

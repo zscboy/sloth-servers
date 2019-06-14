@@ -104,9 +104,14 @@ func (*mySQLUtil) LoadUserDiamond(userID string) int64 {
 	return loadUserDiamond(userID)
 }
 
-// errCode = 1 参数错误， 2 牌友群不存在
+// errCode = 1 参数错误, 0 成功
 func (*mySQLUtil) RenameClub(clubID string, clubName string) (errCode int) {
 	return renameClub(clubID, clubName)
+}
+
+// errCode = 1 参数错误， 0 成功
+func (*mySQLUtil) ChangeClubMemberRole(memberID string, clubID string, role int32) (errCode int) {
+	return changeClubMemberRole(memberID, clubID, role)
 }
 
 // InitWith init

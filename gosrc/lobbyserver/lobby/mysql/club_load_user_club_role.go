@@ -21,6 +21,8 @@ func loadUserClubRole(userID string, clubID string) (role int32) {
 		panic(err.Error())
 	}
 
+	defer rows.Close()
+
 	if rows.Next() {
 		err = rows.Scan(&myRole)
 		if err != nil {

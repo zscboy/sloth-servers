@@ -19,6 +19,8 @@ func loadClubIDByNumber(clubNumber string) string {
 		panic(err.Error())
 	}
 
+	defer rows.Close()
+
 	if !rows.Next() {
 		return ""
 	}

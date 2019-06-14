@@ -11,6 +11,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// // ClubUser 牌友群成员信息
+// type ClubUser struct {
+// 	UserID string
+// 	Role int32
+// }
+
 // onLoadClubMembers 加载俱乐部成员列表
 func onLoadClubMembers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	userID := ps.ByName("userID")

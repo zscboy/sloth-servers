@@ -1,6 +1,7 @@
 package club
 
 import (
+	"fmt"
 	"bytes"
 	"github.com/golang/protobuf/proto"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func TestSomething(t *testing.T) {
 	// testCreateClub("10000002")
 	// testLoadMyClubs("10000002")
 	// testDeleteClub("10000002")
-	// testLoadClubMembers("10000002")
+	// testLoadClubMembers("10000019")
 	// testJoinClub("10000004", "56135")
 	// testLoadClubEvent("10000002")
 	// testJoinApproval("10000001", "10000004", "0aee5aa1-8765-11e9-9a1a-00163e0f7404", "yes", "11")
@@ -29,7 +30,8 @@ func TestSomething(t *testing.T) {
 	// testDeleteClubRoom("10000002")
 	// testLoadMyApplyEvent("10000004")
 	// renameClub("10000019", "4088fc70-8e50-11e9-8fea-107b445225b6", "哈哈哈")
-	kickOutMember("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
+	// kickOutMember("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
+	changeClubMemberRole("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020", int(ClubRoleType_CRoleTypeMgr))
 
 }
 
@@ -188,7 +190,7 @@ func testDeleteClub(id string) {
 func testLoadClubMembers(id string) {
 	tk := lobby.GenTK(id)
 	// tk := "vpequ8ELk8xCTPN-heLzghqikggNF85xeH1AyElDSHY="
-	var url = "http://localhost:3002/lobby/uuid/loadClubMembers?tk=" + tk + "&clubID=6b512ef0-7b77-11e9-a192-107b445225b6"
+	var url = "http://localhost:3002/lobby/uuid/loadClubMembers?tk=" + tk + "&clubID=83f6aa30-8e63-11e9-8fea-107b445225b6"
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("GET", url, nil)
 
@@ -746,6 +748,63 @@ func kickOutMember(id string, clubID string, memberID string) {
 	tk := lobby.GenTK(id)
 
 	var url = "http://localhost:3002/lobby/uuid/kickOut?tk=" + tk + "&clubID=" + clubID + "&memberID=" + memberID
+	client := &http.Client{Timeout: time.Second * 60}
+	req, err := http.NewRequest("GET", url, nil)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("err: ", err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		log.Println("resp.StatusCode != 200, resp.StatusCode:", resp.StatusCode)
+		return
+	}
+
+	errcode := resp.Header.Get("error")
+	if errcode != "" {
+		log.Println("errorcode: ", errcode)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("handlerChat error:", err)
+		return
+	}
+
+	msgClubReply := &MsgClubReply{}
+	err = proto.Unmarshal(body, msgClubReply)
+	if err != nil {
+		log.Println("err:", err)
+	}
+
+	if msgClubReply.GetReplyCode() == int32(ClubReplyCode_RCError) {
+		genericRely := &MsgCubOperGenericReply{}
+		err = proto.Unmarshal(msgClubReply.GetContent(), genericRely)
+		if err != nil {
+			log.Println("parse error:", err)
+		}
+
+		log.Println("errCode:", genericRely.GetErrorCode())
+		return
+	}
+
+	buf := msgClubReply.GetContent()
+	if len(buf) == 0 {
+		log.Println("len(buf) == 0")
+		return
+	}
+
+	log.Println("event:", string(buf))
+}
+
+func changeClubMemberRole(id string, clubID string, memberID string, role int) {
+	tk := lobby.GenTK(id)
+
+	roleString := fmt.Sprintf("%d", role)
+	var url = "http://localhost:3002/lobby/uuid/changeRole?tk=" + tk + "&clubID=" + clubID + "&memberID=" + memberID + "&role=" + roleString
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("GET", url, nil)
 

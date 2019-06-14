@@ -195,6 +195,7 @@ type IMySQLUtil interface {
 	RemoveUserFromClub(userID string, clubID string) (errCode int)
 	LoadUserDiamond(userID string) int64
 	RenameClub(clubID string, clubName string) (errCode int)
+	ChangeClubMemberRole(memberID string, clubID string, role int32) (errCode int)
 }
 
 // IUpdateUtil update utility

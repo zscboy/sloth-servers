@@ -10,6 +10,8 @@ func loadUserClubIDs(userID string) (clubIDs []string) {
 
 	myClubIDs := make([]string, 0)
 	rows, err := stmt.Query(userID)
+	defer rows.Close()
+
 	for rows.Next() {
 		var clubID string
 		err = rows.Scan(&clubID)

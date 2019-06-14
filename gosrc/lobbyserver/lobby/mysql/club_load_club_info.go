@@ -34,6 +34,8 @@ func loadClubInfo(clubID string) (clubInfo *club.MsgClubInfo) {
 		panic(err.Error())
 	}
 
+	defer rows.Close()
+
 	if !rows.Next() {
 		return nil
 	}

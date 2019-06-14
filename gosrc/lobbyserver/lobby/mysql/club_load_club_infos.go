@@ -21,6 +21,8 @@ func loadClubInfos(cursor int, count int) (clubInfo []*club.MsgClubInfo) {
 		panic(err.Error())
 	}
 
+	defer rows.Close()
+
 	clubInfos := make([]*club.MsgClubInfo, 0)
 	for rows.Next() {
 		var myClubID sql.NullString

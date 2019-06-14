@@ -1,0 +1,83 @@
+package club
+
+import (
+	"github.com/julienschmidt/httprouter"
+	log "github.com/sirupsen/logrus"
+	"lobbyserver/lobby"
+	"net/http"
+	"strconv"
+	"gconst"
+)
+
+// onSetName 更新俱乐部的名称
+func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	userID := ps.ByName("userID")
+	log.Println("onSetClubMemberRole, userID:", userID)
+
+	var query = r.URL.Query()
+	clubID := query.Get("clubID")
+	memberID := query.Get("memberID")
+	role := query.Get("role") // 新俱乐部名称
+
+	if clubID == "" {
+		log.Println("onSetClubMemberRole, need club id")
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
+	if role == "" {
+		log.Println("onSetClubMemberRole, need role")
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
+	roleInt, _ := strconv.Atoi(role)
+	if roleInt != int(ClubRoleType_CRoleTypeMgr) && roleInt != int(ClubRoleType_CRoleTypeMember) {
+		log.Printf("onSetClubMemberRole, role %d not club member and mgr", roleInt)
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
+	_, ok := clubMgr.clubs[clubID]
+	if !ok {
+		log.Println("onJoinClub, club not exist for clubID:", clubID)
+		sendGenericError(w, ClubOperError_CERR_Club_Not_Exist)
+		return
+	}
+
+	mySQLUtil := lobby.MySQLUtil()
+	myRole := mySQLUtil.LoadUserClubRole(userID, clubID)
+	// 只有群主可以设管理员
+	if myRole != int32(ClubRoleType_CRoleTypeCreator) {
+		log.Printf("User %s not club %s creator, can change club member role", userID, clubID)
+		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_Or_Mgr_Can_Set)
+		return
+	}
+
+	memberRole := mySQLUtil.LoadUserClubRole(memberID, clubID)
+	if memberRole == int32(ClubRoleType_CRoleTypeNone) {
+		log.Printf("member %s no in club %s, can not change role", memberID, clubID)
+		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
+		return
+	}
+
+	if memberRole == int32(roleInt) {
+		log.Printf("member %s in club %s have been role %d, can't set repeat", memberID, clubID, roleInt)
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
+	errCode := mySQLUtil.ChangeClubMemberRole(memberID, clubID, int32(roleInt))
+	if errCode != 0 {
+		log.Error("db change club member role error errCode:", errCode)
+	}
+
+	if int32(roleInt) == int32(ClubRoleType_CRoleTypeMgr) {
+		conn := lobby.Pool().Get()
+		defer conn.Close()
+		conn.Do("SADD", gconst.LobbyClubManager + clubID, memberID)
+	}
+
+	// 操作成功
+	sendGenericError(w, ClubOperError_CERR_OK)
+}

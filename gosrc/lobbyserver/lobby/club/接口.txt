@@ -102,3 +102,38 @@ url: /lobby/uuid/loadMyApplyEvent?tk=xxx&
 tk 是token
 
 返回：MsgClubLoadEventsReply
+
+13. 重命名牌友群
+url: /lobby/uuid/renameClub?tk=xxx&clubID=xxx&clname=xxx
+tk 是token
+clubID 是牌友群ID
+clname 是重新命名的牌友群名字
+
+14. 删除牌友群成员
+url: /lobby/uuid/kickOut?tk=xxx&clubID=xxx&memberID=xxx
+tk 是token
+clubID 是牌友群ID
+memberID 是被删除的成员ID
+
+15. 设置管理员/取消管理员
+url: /lobby/uuid/changeRole?tk=xxx&clubID=xxx&memberID=xxx&role=xxx
+tk 是token
+clubID 是牌友群ID
+memberID 指定位管理员的群成员的ID
+role 角色，参照下面
+// 俱乐部角色定义
+enum ClubRoleType
+{
+    CRoleTypeNone = 0; // 无效角色
+    CRoleTypeMember = 1; // 成员
+    CRoleTypeCreator = 2; // 创建者
+    CRoleTypeMgr = 3; // 管理者
+}
+
+
+16. 拉取管理员信息列表
+url: /lobby/uuid/loadManager?tk=xxx&clubID=xxx
+tk 是token
+clubID 是牌友群ID
+
+返回值club.MsgClubLoadMembersReply

@@ -56,6 +56,8 @@ message MsgClubInfo
     optional int32 createRoomOption = 10; // 0 允许普通玩家开启房间，1仅部长可以开房间
     optional int32 payRoomOption = 11; // 创建房间时支付类型，0从基金支付，1是开房者设置（例如AA或者房主支付）
     optional int32 createTime = 12; // 创建时间
+	optional int32 memberCount = 13; // 当前人数
+	repeated string managers = 14; // 管理员列表
 }
 
 // 加载自己的俱乐部
