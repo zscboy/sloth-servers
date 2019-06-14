@@ -23,7 +23,7 @@ func TestSomething(t *testing.T) {
 func testGetShareInfo(id string) {
 	tk := lobby.GenTK(id)
 	// tk := "vpequ8ELk8xCTPN-heLzghqikggNF85xeH1AyElDSHY="
-	var url = "http://localhost:3002/lobby/uuid/getShareInfo?tk="+ tk + "&sence=1&mediaType=1&shareType=1"
+	var url = "https://dfh5-develop.qianz.com:30000/lobby/uuid/getShareInfo?tk="+ tk + "&sence=1&mediaType=1&shareType=1"
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("GET", url, nil)
 

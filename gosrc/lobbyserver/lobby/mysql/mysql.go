@@ -104,6 +104,11 @@ func (*mySQLUtil) LoadUserDiamond(userID string) int64 {
 	return loadUserDiamond(userID)
 }
 
+// errCode = 1 参数错误， 2 牌友群不存在
+func (*mySQLUtil) RenameClub(clubID string, clubName string) (errCode int) {
+	return renameClub(clubID, clubName)
+}
+
 // InitWith init
 func InitWith() {
 	lobby.SetMySQLUtil(sqlUtil)

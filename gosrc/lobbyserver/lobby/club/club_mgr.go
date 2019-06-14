@@ -57,7 +57,7 @@ func (mgr *MyClubMgr) IsUserPermisionDeleteRoom(userID string, clubID string) bo
 	mySQLUtil := lobby.MySQLUtil()
 	role := mySQLUtil.LoadUserClubRole(userID, clubID)
 	if role == int32(ClubRoleType_CRoleTypeCreator) || role == int32(ClubRoleType_CRoleTypeMgr) {
-			return true
+		return true
 	}
 
 	return false

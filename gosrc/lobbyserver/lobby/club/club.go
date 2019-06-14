@@ -1,29 +1,30 @@
 package club
 
 import (
-	"lobbyserver/lobby"
-	"time"
 	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
+	"lobbyserver/lobby"
+	"time"
 )
+
 var (
 	clubMgr *MyClubMgr
 
 	// 2010，作为俱乐部所有计算时间的参考点
 	time2010, _ = time.Parse("2006-Jan-02", "2010-Jan-01")
 
-	luaScriptInsertNewEvent *redis.Script
+	luaScriptInsertNewEvent        *redis.Script
 	luaScriptRemoveMemberEventList *redis.Script
 )
 
 // createLuaScript lua脚本，用脚本的主要目的是如果把数据拉回到golang端判断
 // 可能导致巨大的流量压力，因此用lua脚本在redis端处理后再把结果弄回来。lua脚本执行速度很慢。
 func createClubLuaScript() {
-    // KEYS[1] list prefix
-    // KEYS[2] set prefix
-    // KEYS[3] member-set key
-    // KEYS[4] eventID
-    script := `local prefix = KEYS[1]
+	// KEYS[1] list prefix
+	// KEYS[2] set prefix
+	// KEYS[3] member-set key
+	// KEYS[4] eventID
+	script := `local prefix = KEYS[1]
 		local sprefix = KEYS[2]
 		local eventID = KEYS[4]
 		local members = redis.call('SMEMBERS', KEYS[3])
@@ -33,7 +34,6 @@ func createClubLuaScript() {
 		end`
 
 	luaScriptInsertNewEvent = redis.NewScript(4, script)
-
 
 	script3 := `local prefix = KEYS[1]
 		local sprefix = KEYS[2]
@@ -51,7 +51,7 @@ func loadAllClub() {
 	mySQLUtil := lobby.MySQLUtil()
 	cursor := 0
 	count := 100
-	for ; ; {
+	for {
 		infos := mySQLUtil.LoadClubInfos(cursor, count)
 		clubInfos := infos.([]*MsgClubInfo)
 		for _, clubInfo := range clubInfos {
@@ -91,4 +91,6 @@ func InitWith() {
 	lobby.RegHTTPHandle("GET", "/loadClubEvents", onLoadEvents)
 	lobby.RegHTTPHandle("GET", "/quitClub", onQuit)
 	lobby.RegHTTPHandle("GET", "/loadMyApplyEvent", onLoadMyApplyEvent)
+	lobby.RegHTTPHandle("GET", "/renameClub", onSetName)
+	lobby.RegHTTPHandle("GET", "/kickOut", onKickOut)
 }

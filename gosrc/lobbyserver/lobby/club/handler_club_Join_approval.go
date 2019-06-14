@@ -1,13 +1,13 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
-	"lobbyserver/lobby"
 	"github.com/garyburd/redigo/redis"
-	"github.com/julienschmidt/httprouter"
 	proto "github.com/golang/protobuf/proto"
+	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
+	"lobbyserver/lobby"
+	"net/http"
 )
 
 // 审核其他玩家加入俱乐部申请
@@ -53,6 +53,8 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		return
 	}
 
+	clubInfo := club.clubInfo
+
 	mySQLUtil := lobby.MySQLUtil()
 	role := mySQLUtil.LoadUserClubRole(applicantID, clubID)
 	if role != int32(ClubRoleType_CRoleTypeNone) {
@@ -69,11 +71,11 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		return
 	}
 
-	clubInfo := club.clubInfo
 	// 只有部长才可以批准或者拒绝
-	if clubInfo.GetCreatorUserID() != userID {
-		log.Printf("onJoinApprove, userID %s not creator %s\n", userID, clubInfo.GetCreatorUserID())
-		sendGenericError(w, ClubOperError_CERR_Only_Creator_Can_Approve)
+	role = mySQLUtil.LoadUserClubRole(userID, clubID)
+	if role != int32(ClubRoleType_CRoleTypeCreator) && role != int32(ClubRoleType_CRoleTypeMgr) {
+		log.Printf("onJoinApprove, userID %s not creator and mgr %s\n", userID, clubInfo.GetCreatorUserID())
+		sendGenericError(w, ClubOperError_CERR_Only_Creator_Or_Mgr_Can_Approve)
 		return
 	}
 
@@ -97,7 +99,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	// 修改事件的批准相关参数
 	appendApprovalResult2Event(eventID, clubID, agree, conn)
 
-	userIDs := []string {applicantID}
+	userIDs := []string{applicantID}
 
 	if "yes" != agree {
 		// 发邮件通知申请者告知被拒绝
@@ -126,7 +128,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 			// newJoinEvent(clubID, applicantID, conn)
 
 			// 给刚加入俱乐部成员 发送一个邮件
-			var text = "您成功加入了 " +  clubInfo.GetBaseInfo().GetClubName() + " 俱乐部，赶紧加入俱乐部的牌局吧!"
+			var text = "您成功加入了 " + clubInfo.GetBaseInfo().GetClubName() + " 俱乐部，赶紧加入俱乐部的牌局吧!"
 			sendClubEventMails(userIDs, text)
 			// TODO: 给用户发通知
 

@@ -1,15 +1,15 @@
 package club
 
 import (
-	"net/http"
-	"gconst"
-	"time"
 	"fmt"
-	"lobbyserver/lobby"
+	"gconst"
+	"github.com/garyburd/redigo/redis"
 	"github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
-	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
+	"lobbyserver/lobby"
+	"net/http"
+	"time"
 )
 
 // onJoinClub 申请加入某个俱乐部
@@ -47,7 +47,6 @@ func onJoinClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		sendGenericError(w, ClubOperError_CERR_Invitee_Already_In_Club)
 		return
 	}
-
 
 	isApplicant := isApplicant(clubID, userID)
 
@@ -141,7 +140,7 @@ func newApplicateEvent(clubID string, applicantUserID string, owner string) {
 	conn.Send("HSET", gconst.LobbyClubNeedHandledTablePrefix+clubID, eventID32, owner)
 	conn.Send("LPUSH", gconst.LobbyClubEventListPrefix+clubID, eventID32)
 	conn.Send("SADD", gconst.LobbyClubApplicantPrefix+clubID, applicantUserID)
-	conn.Send("LPUSH", gconst.LobbyClubUserApplicantEventPrefix + applicantUserID, fmt.Sprintf("%s,%d", clubID, eventID32))
+	conn.Send("LPUSH", gconst.LobbyClubUserApplicantEventPrefix+applicantUserID, fmt.Sprintf("%s,%d", clubID, eventID32))
 
 	_, err = conn.Do("EXEC")
 	if err != nil {

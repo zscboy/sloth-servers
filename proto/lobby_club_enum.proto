@@ -29,7 +29,7 @@ enum ClubOperError
     CERR_Database_IO = 3; // 数据库错误
     CERR_Encode_Decode = 4; // 编码解码错误
     CERR_Invalid_Input_Parameter = 5; // 无效输入参数
-    CERR_Only_Creator_Can_KickOut = 6; // 只有创建者才可以踢人
+    CERR_Only_Creator_Or_Mgr_Can_KickOut = 6; // 只有群主或者管理员才可以踢人
     CERR_You_Already_In_Club = 7; // 你已经在此俱乐部
     CERR_You_Are_In_Club_Block_List = 8; // 你已经在此俱乐部黑名单，不能申请加入
     CERR_You_Already_Applicate = 9; // 你已经申请过，请耐心等候部长批准
@@ -38,7 +38,7 @@ enum ClubOperError
     CERR_Invitee_Already_Applicate = 12; // 你已经申请过，请耐心等候部长批准
     CERR_Club_Not_Exist = 13; // 俱乐部不存在
     CERR_Only_Creator_Can_Invite = 14; // 只有部长可以邀请别人
-    CERR_Only_Creator_Can_Approve = 15; // 只有部长可以批准
+    CERR_Only_Creator_Or_Mgr_Can_Approve = 15; // 只有群主或者管理员可以批准
     CERR_No_Applicant = 16; // 没有对应的申请者
     CERR_Applicant_Already_In_Club = 17; // 申请者已经是俱乐部成员
     CERR_Applicant_In_Club_Block_List = 18; // 申请者在俱乐部的黑名单中
@@ -48,10 +48,11 @@ enum ClubOperError
     CERR_Club_Only_Owner_Can_Disband = 22; // 只有部长可以解散俱乐部
     CERR_Owner_Can_not_quit = 23; // 部长不能退出自己的俱乐部，只能解散
     CERR_User_Not_In_Club = 24; // 玩家不在俱乐部中
-    CERR_Club_Only_Owner_Can_Set = 25; // 只有部长可以设置俱乐部
+    CERR_Club_Only_Owner_Or_Mgr_Can_Set = 25; // 只有群主或者管理员可以设置俱乐部
     CERR_Club_Forbit_Join = 26; // 俱乐部禁止加入
     CERR_Input_Text_Too_Long = 27; // 输入文字过长
     CERR_Club_Has_Room_In_PlayingState = 28; // 俱乐部还有正在游戏中的房间，不能解散
+	CERR_Can_Not_Kick_Out_Creator_Or_Mgr = 29; // 不能踢群主或者管理员
 }
 
 enum ClubEventType

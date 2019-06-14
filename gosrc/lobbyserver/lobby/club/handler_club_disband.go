@@ -53,17 +53,13 @@ func onDisbandClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	mySQLUtil := lobby.MySQLUtil()
 	role := mySQLUtil.LoadUserClubRole(userID, clubID)
-	if role == int32(ClubRoleType_CRoleTypeNone) {
-		log.Printf("onDisbandClub, user %s not in club %s", userID, clubID)
-		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
-		return
-	}
-
 	if role != int32(ClubRoleType_CRoleTypeCreator) {
 		log.Printf("onDisbandClub, user %s no owner, can not disband club", userID)
 		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_Can_Disband)
 		return
 	}
+
+	// TODO:判断是否有房间正在打，如果正在打，则不能解散牌友群
 
 	// TODO: 拉取所有成员，给他们发通知
 	memberIDs := mySQLUtil.LoadClubUserIDs(clubID)
