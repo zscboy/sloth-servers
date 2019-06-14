@@ -2,12 +2,13 @@ package club
 
 import (
 	"gconst"
+	"lobbyserver/lobby"
+	"net/http"
+
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
-	"lobbyserver/lobby"
-	"net/http"
 )
 
 // 审核其他玩家加入俱乐部申请

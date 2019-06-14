@@ -2,11 +2,12 @@ package club
 
 import (
 	"gconst"
-	"net/http"
 	"lobbyserver/lobby"
-	"github.com/julienschmidt/httprouter"
+	"net/http"
+
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
+	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -75,13 +76,13 @@ func onLoadMyClubs(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 			if err == nil {
 				for i, cinfo := range msgClubInfos {
-					countEvent, _ := redis.Int(vs[i * 2], nil)
+					countEvent, _ := redis.Int(vs[i*2], nil)
 					hasUnReadEvents := false
 					if countEvent > 0 {
 						hasUnReadEvents = true
 					}
 					cinfo.HasUnReadEvents = &hasUnReadEvents
-					cinfo.Managers, _ = redis.Strings(vs[i* 2 + 1], nil)
+					cinfo.Managers, _ = redis.Strings(vs[i*2+1], nil)
 				}
 			}
 		}

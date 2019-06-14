@@ -1,9 +1,10 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
 	"lobbyserver/lobby"
+	"net/http"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"

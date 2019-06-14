@@ -1,10 +1,11 @@
 package club
 
 import (
-	"net/http"
-	"strconv"
 	"gconst"
 	"lobbyserver/lobby"
+	"net/http"
+	"strconv"
+
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"

@@ -1,12 +1,13 @@
 package club
 
 import (
-	"github.com/julienschmidt/httprouter"
-	log "github.com/sirupsen/logrus"
+	"gconst"
 	"lobbyserver/lobby"
 	"net/http"
 	"strconv"
-	"gconst"
+
+	"github.com/julienschmidt/httprouter"
+	log "github.com/sirupsen/logrus"
 )
 
 // onSetName 更新俱乐部的名称
@@ -75,7 +76,7 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	if int32(roleInt) == int32(ClubRoleType_CRoleTypeMgr) {
 		conn := lobby.Pool().Get()
 		defer conn.Close()
-		conn.Do("SADD", gconst.LobbyClubManager + clubID, memberID)
+		conn.Do("SADD", gconst.LobbyClubManager+clubID, memberID)
 	}
 
 	// 操作成功

@@ -39,7 +39,13 @@ require (
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
+	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5 // indirect
+	golang.org/x/net v0.0.0-20190607181551-461777fb6f67 // indirect
+	golang.org/x/sync v0.0.0-20190427212804-112230192c58 // indirect
+	golang.org/x/sys v0.0.0-20190730174312-6a60838ec25 // indirect
+	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
+	golang.org/x/tools v0.0.0-20190610231749-f8d1dee965f7 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	gpubsub v0.0.0
 )

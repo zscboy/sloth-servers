@@ -1,18 +1,19 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
-	"time"
 	"lobbyserver/lobby"
+	"net/http"
+	"time"
+
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
-	log "github.com/sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
+	log "github.com/sirupsen/logrus"
 )
 
 // onKickOut 剔除某个成员
-func onKickOut(w http.ResponseWriter, r *http.Request,  ps httprouter.Params) {
+func onKickOut(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	userID := ps.ByName("userID")
 	log.Println("onKickOut, userID:", userID)
 
@@ -151,7 +152,7 @@ func newKickoutEvent(clubID string, userID string, conn redis.Conn) {
 	// KEYS[2] member-set key
 	// KEYS[3] eventID
 	_, err = luaScriptInsertNewEvent.Do(conn, gconst.LobbyClubUnReadEventUserListPrefix+clubID+":",
-	gconst.LobbyClubUnReadEventUserSetPrefix+clubID+":", gconst.LobbyClubMemberSetPrefix+clubID, eventID32)
+		gconst.LobbyClubUnReadEventUserSetPrefix+clubID+":", gconst.LobbyClubMemberSetPrefix+clubID, eventID32)
 
 	if err != nil {
 		log.Panic(err)

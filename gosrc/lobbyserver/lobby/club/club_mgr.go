@@ -1,14 +1,14 @@
 package club
-import(
+
+import (
 	"lobbyserver/lobby"
 )
 
-
 // Club 牌友群
 type Club struct {
-	ID                    string
-	clubInfo              *MsgClubInfo      // club info
-	mm                    map[string]bool   // 成员列表
+	ID       string
+	clubInfo *MsgClubInfo    // club info
+	mm       map[string]bool // 成员列表
 }
 
 // MyClubMgr 用户管理
@@ -32,7 +32,7 @@ func newClubMgr() *MyClubMgr {
 }
 
 // GetClub 获取牌友圈
-func (mgr *MyClubMgr)GetClub(clubID string) interface{} {
+func (mgr *MyClubMgr) GetClub(clubID string) interface{} {
 	club, ok := clubMgr.clubs[clubID]
 	if !ok {
 		return nil
@@ -45,7 +45,7 @@ func (mgr *MyClubMgr) IsUserPermisionCreateRoom(userID string, clubID string) bo
 	mySQLUtil := lobby.MySQLUtil()
 	role := mySQLUtil.LoadUserClubRole(userID, clubID)
 	if role == int32(ClubRoleType_CRoleTypeCreator) || role == int32(ClubRoleType_CRoleTypeMgr) {
-			return true
+		return true
 	}
 
 	return false

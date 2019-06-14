@@ -1,15 +1,15 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
+	"lobbyserver/lobby"
+	"net/http"
 	"strconv"
 	"strings"
-	"lobbyserver/lobby"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/julienschmidt/httprouter"
 	proto "github.com/golang/protobuf/proto"
+	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
 

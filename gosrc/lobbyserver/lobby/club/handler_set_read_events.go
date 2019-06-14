@@ -1,10 +1,11 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
-	"strings"
 	"lobbyserver/lobby"
+	"net/http"
+	"strings"
+
 	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
 )

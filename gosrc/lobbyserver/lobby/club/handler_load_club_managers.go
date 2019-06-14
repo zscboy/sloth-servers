@@ -1,9 +1,10 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
 	"lobbyserver/lobby"
+	"net/http"
+
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
@@ -51,7 +52,7 @@ func onLoadClubManagers(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	conn := lobby.Pool().Get()
 	defer conn.Close()
 
-	memberIDs, _ := redis.Strings(conn.Do("SMEMBERS", gconst.LobbyClubManager + clubID))
+	memberIDs, _ := redis.Strings(conn.Do("SMEMBERS", gconst.LobbyClubManager+clubID))
 
 	loadMemberReply := &MsgClubLoadMembersReply{}
 	newCusor32 := int32(0)

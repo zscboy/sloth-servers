@@ -3,13 +3,14 @@ package club
 import (
 	"fmt"
 	"gconst"
+	"lobbyserver/lobby"
+	"net/http"
+	"time"
+
 	"github.com/garyburd/redigo/redis"
 	"github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
-	"lobbyserver/lobby"
-	"net/http"
-	"time"
 )
 
 // onJoinClub 申请加入某个俱乐部

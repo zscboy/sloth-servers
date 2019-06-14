@@ -1,11 +1,12 @@
 package club
 
 import (
-	"net/http"
 	"gconst"
 	"lobbyserver/lobby"
-	"github.com/julienschmidt/httprouter"
+	"net/http"
+
 	"github.com/garyburd/redigo/redis"
+	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -73,7 +74,6 @@ func onDisbandClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	delete(clubMgr.clubs, clubID)
 
-
 	// if clubBusyRoomCount(clubID) > 0 {
 	// 	log.Printf("onDisbandClub, club has playing rooms %s\n", clubID)
 	// 	sendGenericError(w, ClubOperError_CERR_Club_Has_Room_In_PlayingState)
@@ -137,7 +137,7 @@ func onDisbandClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 }
 
 // redisClearClubData 删除俱乐部所有相关表格
-func redisClearClubData( clubID string) {
+func redisClearClubData(clubID string) {
 	conn := lobby.Pool().Get()
 	defer conn.Close()
 

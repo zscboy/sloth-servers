@@ -1,10 +1,11 @@
 package club
 
 import (
-	"github.com/garyburd/redigo/redis"
-	log "github.com/sirupsen/logrus"
 	"lobbyserver/lobby"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	log "github.com/sirupsen/logrus"
 )
 
 var (

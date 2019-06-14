@@ -1,10 +1,11 @@
 package club
 
 import (
-	"github.com/julienschmidt/httprouter"
-	log "github.com/sirupsen/logrus"
 	"lobbyserver/lobby"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	log "github.com/sirupsen/logrus"
 )
 
 // onSetName 更新俱乐部的名称

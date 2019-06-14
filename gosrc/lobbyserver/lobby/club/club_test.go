@@ -1,15 +1,16 @@
 package club
 
 import (
-	"fmt"
 	"bytes"
-	"github.com/golang/protobuf/proto"
+	"fmt"
 	"io/ioutil"
 	"lobbyserver/lobby"
 	"log"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/golang/protobuf/proto"
 )
 
 // TestSomething 测试用例
@@ -918,4 +919,3 @@ func loadClubManagers(id string, clubID string) {
 
 	log.Println("reply:", reply)
 }
-

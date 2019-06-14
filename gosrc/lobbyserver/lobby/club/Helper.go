@@ -1,12 +1,14 @@
 package club
 
 import (
+	"lobbyserver/lobby"
 	"net/http"
 	"time"
-	"lobbyserver/lobby"
+
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 )
+
 // sendGenericError 发送一个错误码到客户端
 func sendGenericError(w http.ResponseWriter, errCode ClubOperError) {
 	gr := MsgCubOperGenericReply{}
@@ -101,7 +103,6 @@ func stringArrayRemove(ss []string, s string) []string {
 
 	return ss
 }
-
 
 func unixTimeInSeconsSince2010() uint32 {
 	return uint32(time.Now().Unix() / 60)

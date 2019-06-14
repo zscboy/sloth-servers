@@ -5,8 +5,8 @@ package club
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	math "math"
+	proto "github.com/golang/protobuf/proto"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1137,3 +1137,4 @@ var fileDescriptor_3b10ad64e8169303 = []byte{
 	0x62, 0xc1, 0x4b, 0x12, 0x1c, 0x56, 0xf8, 0x37, 0x00, 0x00, 0xff, 0xff, 0x1d, 0xa5, 0x46, 0xe7,
 	0x17, 0x07, 0x00, 0x00,
 }
+
