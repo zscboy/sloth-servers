@@ -96,12 +96,14 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 
 	memberRole := mySQLUtil.LoadUserClubRole(memberID, clubID)
 	if memberRole == int32(ClubRoleType_CRoleTypeNone) {
+		log.Printf("member %s not in club %s", memberID, clubID)
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
 		return false
 	}
 
 	// 被踢的人只能是普通成员
 	if memberRole != int32(ClubRoleType_CRoleTypeMember) {
+		log.Printf("member %s role is %s, can't delete", memberID, memberRole)
 		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_KickOut)
 		return false
 	}
