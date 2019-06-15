@@ -5,7 +5,6 @@ import (
 	"lobbyserver/lobby"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
@@ -35,7 +34,7 @@ func onLoadMyApplyEvent(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	const maxLoad int = 10
 
 	// 先加载ID
-	idStrings, err := redis.Strings(conn.Do("LRANGE", gconst.LobbyClubUserApplicantEventPrefix+userID, cursor,
+	vs, err := redis.Values(conn.Do("LRANGE", gconst.LobbyClubUserApplicantEventPrefix+userID, cursor,
 		cursor+maxLoad-1))
 	if err != nil && err != redis.ErrNil {
 		log.Println("onLoadMyApplyEvent, redis error:", err)
@@ -43,17 +42,31 @@ func onLoadMyApplyEvent(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	events := make([]*MsgClubEvent, 0, maxLoad)
-	if err == nil {
-		events = loadEventsByIDs(idStrings, conn, userID)
+	records := make([]*MsgClubApplyRecord, 0, maxLoad)
+
+	for _, v := range vs {
+		buf, _ := redis.Bytes(v, nil)
+		applyRecord := &MsgClubApplyRecord{}
+		err := proto.Unmarshal(buf, applyRecord)
+		if err != nil {
+			log.Error("Unmarshal MsgClubApplyRecord, err:", err)
+			continue
+		}
+
+		records = append(records, applyRecord)
+
 	}
 
-	loadEventReply := &MsgClubLoadEventsReply{}
-	loadEventReply.Events = events
-	cursor32 := int32(cursor + len(idStrings))
-	loadEventReply.Cursor = &cursor32
+	cursor32 := int32(cursor + len(vs))
+	if len(vs) < maxLoad {
+		cursor32 = 0
+	}
 
-	b, err := proto.Marshal(loadEventReply)
+	applyRecordReply := &MsgClubLoadApplyRecordReply{}
+	applyRecordReply.Records = records
+	applyRecordReply.Cursor = &cursor32
+
+	b, err := proto.Marshal(applyRecordReply)
 	if err != nil {
 		log.Println("onLoadMyApplyEvent, marshal error:", err)
 		sendGenericError(w, ClubOperError_CERR_Encode_Decode)
@@ -61,40 +74,4 @@ func onLoadMyApplyEvent(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	sendMsgClubReply(w, ClubReplyCode_RCOperation, b)
-}
-
-func loadEventsByIDs(idStrings []string, conn redis.Conn, userID string) []*MsgClubEvent {
-	conn.Send("MULTI")
-	for _, idString := range idStrings {
-		ids := strings.Split(idString, ",")
-		clubID := ids[0]
-		eventID := ids[1]
-		log.Printf("clubID:%s, eventID:%s", clubID, eventID)
-		conn.Send("HGET", gconst.LobbyClubEventTablePrefix+clubID, eventID)
-	}
-
-	values, err := redis.Values(conn.Do("EXEC"))
-	if err != nil {
-		log.Panicln("loadEventsByIDs failed:", err)
-	}
-
-	events := make([]*MsgClubEvent, 0, len(values))
-	for _, v := range values {
-		b, err := redis.Bytes(v, nil)
-		if err != nil {
-			log.Println("loadEventsByIDs, convert value to bytes failed:", err)
-			continue
-		}
-
-		e := &MsgClubEvent{}
-		err = proto.Unmarshal(b, e)
-		if err != nil {
-			log.Println("loadEventsByIDs, unmarshal bytes to event failed:", err)
-			continue
-		}
-
-		events = append(events, e)
-	}
-
-	return events
 }

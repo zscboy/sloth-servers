@@ -151,6 +151,23 @@ message MsgClubLoadReplayRoomsReply
     optional int32 cursor = 2; // 页号
 }
 
+// 牌友群申请记录
+message MsgClubApplyRecord
+{
+	required string clubID = 1; // 牌友群ID
+	optional string clubNumber = 2; // 牌友群号
+	optional string clubName = 3;   // 牌友名
+	optional int32  approvalResult = 4; // 批准结果，0表示没有处理，1表示同意，2表示拒绝
+	optional int32  eventID = 5; // 事件ID
+	optional int64  timeStamp = 6; // 时间戳
+}
+
+message MsgClubLoadApplyRecordReply
+{
+	repeated MsgClubApplyRecord records = 1; // 俱乐部成员列表
+    optional int32 cursor = 2; // 页号
+}
+
 // 大赢家信息
 // message MsgClubGreatWinner
 // {

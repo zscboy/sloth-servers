@@ -168,5 +168,14 @@ func appendApprovalResult2Event(eventID string, clubID string, agree string, con
 		log.Panicln("appendApprovalResult2Event, Marshal event failed:", err)
 	}
 
-	conn.Do("HSET", gconst.LobbyClubEventTablePrefix+clubID, eventID, b)
+	applyRecordBytes := constructApplyRecord(clubID, int32(e.GetId()), e.GetApprovalResult())
+
+	conn.Send("MULTI")
+	conn.Send("HSET", gconst.LobbyClubEventTablePrefix+clubID, eventID, b)
+	conn.Send("LPUSH", gconst.LobbyClubUserApplicantEventPrefix+e.GetUserID1(), applyRecordBytes)
+	conn.Send("LTRIM", gconst.LobbyClubUserApplicantEventPrefix+e.GetUserID1(), 0, 50)
+	_, err = conn.Do("EXEC")
+	if err != nil {
+		log.Panic(err)
+	}
 }

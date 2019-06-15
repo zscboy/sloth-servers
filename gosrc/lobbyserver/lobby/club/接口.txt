@@ -101,7 +101,7 @@ clubID 是牌友圈ID
 url: /lobby/uuid/loadMyApplyEvent?tk=xxx&
 tk 是token
 
-返回：MsgClubLoadEventsReply
+返回：MsgClubLoadApplyRecordReply
 
 13. 重命名牌友群
 url: /lobby/uuid/renameClub?tk=xxx&clubID=xxx&clname=xxx

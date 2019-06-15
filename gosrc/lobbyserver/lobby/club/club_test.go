@@ -29,11 +29,11 @@ func TestSomething(t *testing.T) {
 	// testCreateClubRoom("10000002")
 	// testLoadClubRooms("10000002")
 	// testDeleteClubRoom("10000002")
-	// testLoadMyApplyEvent("10000004")
+	testLoadMyApplyEvent("10000020")
 	// renameClub("10000019", "4088fc70-8e50-11e9-8fea-107b445225b6", "哈哈哈")
 	// kickOutMember("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
 	// changeClubMemberRole("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020", int(ClubRoleType_CRoleTypeMgr))
-	loadClubManagers("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6")
+	// loadClubManagers("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6")
 
 }
 
@@ -679,13 +679,13 @@ func testLoadMyApplyEvent(id string) {
 		return
 	}
 
-	reply := &MsgClubLoadEventsReply{}
+	reply := &MsgClubLoadApplyRecordReply{}
 	err = proto.Unmarshal(buf, reply)
 	if err != nil {
 		log.Println("err:", err)
 	}
 
-	events := reply.GetEvents()
+	events := reply.GetRecords()
 	log.Println("reply:", reply)
 	log.Println("event:", len(events))
 }

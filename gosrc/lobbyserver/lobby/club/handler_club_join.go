@@ -1,7 +1,6 @@
 package club
 
 import (
-	"fmt"
 	"gconst"
 	"lobbyserver/lobby"
 	"net/http"
@@ -103,6 +102,32 @@ func isApplicant(clubID string, applicantUserID string) bool {
 	return false
 }
 
+func constructApplyRecord(clubID string, eventID int32, approvalResult int32) []byte {
+	club, ok := clubMgr.clubs[clubID]
+	if !ok {
+		return make([]byte, 0)
+	}
+
+	applyRecord := &MsgClubApplyRecord{}
+	applyRecord.ClubID = &clubID
+	clubNumber := club.clubInfo.GetBaseInfo().GetClubNumber()
+	applyRecord.ClubNumber = &clubNumber
+	clubName := club.clubInfo.GetBaseInfo().GetClubName()
+	applyRecord.ClubName = &clubName
+	applyRecord.ApprovalResult = &approvalResult
+	applyRecord.EventID = &eventID
+	timeStamp := time.Now().Unix()
+	applyRecord.TimeStamp = &timeStamp
+
+	buf, err := proto.Marshal(applyRecord)
+	if err != nil {
+		log.Error("constructApplyRecord, err:", err)
+	}
+
+	return buf
+
+}
+
 func newApplicateEvent(clubID string, applicantUserID string, owner string) {
 	// 申请事件ID
 	conn := lobby.Pool().Get()
@@ -133,6 +158,7 @@ func newApplicateEvent(clubID string, applicantUserID string, owner string) {
 		log.Panic(err)
 	}
 
+	applyRecordBytes := constructApplyRecord(clubID, int32(eventID32), clubEvent.GetApprovalResult())
 	// TODO: 后面需要增加裁剪如下各个列表的定时器
 
 	conn.Send("MULTI")
@@ -141,7 +167,8 @@ func newApplicateEvent(clubID string, applicantUserID string, owner string) {
 	conn.Send("HSET", gconst.LobbyClubNeedHandledTablePrefix+clubID, eventID32, owner)
 	conn.Send("LPUSH", gconst.LobbyClubEventListPrefix+clubID, eventID32)
 	conn.Send("SADD", gconst.LobbyClubApplicantPrefix+clubID, applicantUserID)
-	conn.Send("LPUSH", gconst.LobbyClubUserApplicantEventPrefix+applicantUserID, fmt.Sprintf("%s,%d", clubID, eventID32))
+	conn.Send("LPUSH", gconst.LobbyClubUserApplicantEventPrefix+applicantUserID, applyRecordBytes)
+	conn.Send("LTRIM", gconst.LobbyClubUserApplicantEventPrefix+applicantUserID, 0, 50)
 
 	_, err = conn.Do("EXEC")
 	if err != nil {
