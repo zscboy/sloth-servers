@@ -168,6 +168,12 @@ message MsgClubLoadApplyRecordReply
     optional int32 cursor = 2; // 页号
 }
 
+message MsgClubNotify
+{
+	required int32 notifyType = 1; // 牌友群通知类型，参见ClubNotifyType
+	optional bytes content = 2; // 牌友群通知内容
+}
+
 // 大赢家信息
 // message MsgClubGreatWinner
 // {

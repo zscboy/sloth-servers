@@ -747,9 +747,10 @@ func renameClub(id string, clubID string, clubName string) {
 }
 
 func kickOutMember(id string, clubID string, memberID string) {
-	tk := lobby.GenTK(id)
+	// tk := lobby.GenTK(id)
 
-	var url = "http://localhost:3002/lobby/uuid/kickOut?tk=" + tk + "&clubID=" + clubID + "&memberID=" + memberID
+	// var url = "http://localhost:3002/lobby/uuid/kickOut?tk=" + tk + "&clubID=" + clubID + "&memberID=" + memberID
+	var url = "https://dfh5-develop.qianz.com:30000/lobby/uuid/kickOut?&tk=jUdigI7QXE_t09t5HdnySKyBJ0_xy1v5fTinYcqKAeU=&clubID=a53f5dee-8e87-11e9-9a1a-00163e0f7404&memberID=10000003"
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("GET", url, nil)
 

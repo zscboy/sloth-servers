@@ -76,3 +76,9 @@ enum ClubFundEventType
     CFET_Reduce_By_Room = 5; // 开房扣除
     CFET_Add_By_Room = 6; // 开房返还
 }
+
+enum ClubNotifyType
+{
+	CNotify_None = 0; // 无效事件
+	CNotify_Change_Member_Role = 1; // 成员角色改变
+}

@@ -79,6 +79,13 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		conn.Do("SADD", gconst.LobbyClubManager+clubID, memberID)
 	}
 
+	userIDs := []string{memberID}
+	notifyType := int32(ClubNotifyType_CNotify_Change_Member_Role)
+	clubNotify := &MsgClubNotify{}
+	clubNotify.NotifyType = &notifyType
+	// 发送通知
+	sendClubNotify(userIDs, clubNotify)
+
 	// 操作成功
 	sendGenericError(w, ClubOperError_CERR_OK)
 }

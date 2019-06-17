@@ -139,3 +139,15 @@ func sendClubEventMails(userIDs []string, text string) {
 		mailUtil.SendMail(userID, text, title)
 	}
 }
+
+func sendClubNotify(userIDs []string, clubNotify *MsgClubNotify) {
+	if clubNotify == nil {
+		return
+	}
+
+	sessionMgr := lobby.SessionMgr()
+
+	for _, userID := range userIDs {
+		sessionMgr.SendProtoMsgTo(userID, clubNotify, int32(lobby.MessageCode_OPClubNotify))
+	}
+}

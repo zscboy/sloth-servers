@@ -103,8 +103,8 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 
 	// 被踢的人只能是普通成员
 	if memberRole != int32(ClubRoleType_CRoleTypeMember) {
-		log.Printf("member %s role is %s, can't delete", memberID, memberRole)
-		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_KickOut)
+		log.Printf("member %s role is %d, can't delete", memberID, memberRole)
+		sendGenericError(w, ClubOperError_CERR_Can_Not_Kick_Out_Creator_Or_Mgr)
 		return false
 	}
 
