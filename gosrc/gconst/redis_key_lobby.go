@@ -88,9 +88,13 @@ const (
 	LobbyClubRoomSetPrefix = "l:club:rs:"
 	// LobbyClubUserApplicantEventPrefix 用户的申请记录列表
 	LobbyClubUserApplicantEventPrefix = "l:club:uel:"
-	
+
 	// LobbyClubManager 管理员列表
 	LobbyClubManager = "l:club:mgr:"
+
+	// LobbyClubconfig 俱乐部配置
+	LobbyClubconfig = "l:club:cfg:"
+
 
 	// LobbyConfig 大厅相关配置
 	LobbyConfig = "l:config"

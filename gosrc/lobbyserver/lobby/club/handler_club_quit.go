@@ -83,6 +83,7 @@ func redisClearClubUserData(clubID string, userID string, conn redis.Conn) {
 	conn.Send("MULTI")
 	// 移除club的用户数据
 	conn.Send("SREM", gconst.LobbyClubMemberSetPrefix+clubID, userID)
+	conn.Send("SREM", gconst.LobbyClubManager+clubID, userID)
 
 	// 清理事件相关数据
 	conn.Send("DEL", gconst.LobbyClubUnReadEventUserListPrefix+clubID+":"+userID)

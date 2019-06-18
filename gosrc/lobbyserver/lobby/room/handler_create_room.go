@@ -84,7 +84,7 @@ func saveRoomInfo(msgCreateRoom *gconst.SSMsgCreateRoom, gameServerID string, ro
 	conn.Send("HSET", gconst.LobbyRoomNumberTablePrefix+roomNumberString, "roomID", roomID)
 	conn.Send("HMSET", gconst.LobbyRoomTablePrefix+roomID, "ownerID", userID, "roomConfigID",
 		roomConfigID, "gameServerID", gameServerID, "roomNumber", roomNumberString, "timeStamp", timeStampInSecond,
-		"lastActiveTime", lastActiveTime, "roomType", roomType)
+		"lastActiveTime", lastActiveTime, "roomType", roomType, "clubID", msgCreateRoom.GetClubID())
 	conn.Send("SADD", gconst.LobbyRoomTableSet, roomID)
 
 	_, err := conn.Do("EXEC")
