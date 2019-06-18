@@ -73,10 +73,13 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		log.Error("db change club member role error errCode:", errCode)
 	}
 
+	conn := lobby.Pool().Get()
+	defer conn.Close()
+
 	if int32(roleInt) == int32(ClubRoleType_CRoleTypeMgr) {
-		conn := lobby.Pool().Get()
-		defer conn.Close()
 		conn.Do("SADD", gconst.LobbyClubManager+clubID, memberID)
+	}else {
+		conn.Do("SREM", gconst.LobbyClubManager+clubID, memberID)
 	}
 
 	userIDs := []string{memberID}
