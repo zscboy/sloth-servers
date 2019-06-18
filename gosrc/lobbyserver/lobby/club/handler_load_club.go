@@ -11,6 +11,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func countClubMember(clubID string)int {
+	conn := lobby.Pool().Get()
+	defer conn.Close()
+
+	count, err := redis.Int(conn.Do("SCARD", gconst.LobbyClubMemberSetPrefix+clubID))
+	if err != nil {
+		log.Println("countClubMember error:", err)
+	}
+
+	return count
+}
+
 // onLoadMyClubs 加载自己的俱乐部
 func onLoadClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	userID := ps.ByName("userID")
@@ -43,7 +55,7 @@ func onLoadClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	clubInfo := club.clubInfo
 
-	memberCount := int32(mySQLUtil.CountClubUser(clubID))
+	memberCount := int32(countClubMember(clubID))
 	clubInfo.MemberCount = &memberCount
 
 	conn := lobby.Pool().Get()

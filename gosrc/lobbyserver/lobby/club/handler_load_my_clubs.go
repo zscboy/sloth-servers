@@ -70,6 +70,7 @@ func onLoadMyClubs(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 				clubID := cinfo.BaseInfo.GetClubID()
 				conn.Send("SCARD", gconst.LobbyClubUnReadEventUserSetPrefix+clubID+":"+userID)
 				conn.Send("SMEMBERS", gconst.LobbyClubManager+clubID)
+				conn.Send("SCARD", gconst.LobbyClubMemberSetPrefix+clubID)
 			}
 
 			vs, err := redis.Values(conn.Do("EXEC"))
@@ -83,6 +84,9 @@ func onLoadMyClubs(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 					}
 					cinfo.HasUnReadEvents = &hasUnReadEvents
 					cinfo.Managers, _ = redis.Strings(vs[i*2+1], nil)
+					memberCount, _ :=  redis.Int(vs[i*2+2], nil)
+					memberCountInt32 := int32(memberCount)
+					cinfo.MemberCount = &memberCountInt32
 				}
 			}
 		}
