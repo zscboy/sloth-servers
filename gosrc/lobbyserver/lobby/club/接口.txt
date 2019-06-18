@@ -145,7 +145,8 @@ MessageCode: lobby.MessageCode_OPClubNotify = 5
 message MsgClubNotify
 {
 	required int32 notifyType = 1; // 牌友群通知类型，参见ClubNotifyType
-	optional bytes content = 2; // 牌友群通知内容
+    optional string clubID = 2; // 牌友群ID
+	optional bytes content = 3; // 牌友群通知内容
 }
 
 enum ClubNotifyType

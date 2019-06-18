@@ -8,6 +8,7 @@ import (
 	"gconst"
 	"lobbyserver/lobby"
 	"github.com/garyburd/redigo/redis"
+	proto "github.com/golang/protobuf/proto"
 )
 
 // onSetRoomOptions 更新俱乐部的游戏房间设置
@@ -27,6 +28,13 @@ func onSetRoomOptions(w http.ResponseWriter, r *http.Request, userID string) {
 
 	if roomConfigStr == "" {
 		log.Println("onSetRoomOptions, need a valid croption")
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
+	club, ok := clubMgr.clubs[clubID]
+	if !ok {
+		log.Printf("onJoinApprove, club %s not found", clubID)
 		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
 		return
 	}
@@ -56,7 +64,14 @@ func onSetRoomOptions(w http.ResponseWriter, r *http.Request, userID string) {
 	conn.Do("HSET", gconst.LobbyClubconfig + clubID, "roomConfigID", roomConfigID)
 
 
+	clubInfo := club.clubInfo
 
-	// 操作成功
-	sendGenericError(w, ClubOperError_CERR_OK)
+	b, err := proto.Marshal(clubInfo)
+	if err != nil {
+		log.Println("onCreateClub, marshal error:", err)
+		sendGenericError(w, ClubOperError_CERR_Encode_Decode)
+		return
+	}
+
+	sendMsgClubReply(w, ClubReplyCode_RCOperation, b)
 }

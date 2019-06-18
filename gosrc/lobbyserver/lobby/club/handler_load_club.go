@@ -43,6 +43,9 @@ func onLoadClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	clubInfo := club.clubInfo
 
+	memberCount := int32(mySQLUtil.CountClubUser(clubID))
+	clubInfo.MemberCount = &memberCount
+
 	conn := lobby.Pool().Get()
 	defer conn.Close()
 

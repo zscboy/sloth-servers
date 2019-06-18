@@ -86,6 +86,7 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	notifyType := int32(ClubNotifyType_CNotify_Change_Member_Role)
 	clubNotify := &MsgClubNotify{}
 	clubNotify.NotifyType = &notifyType
+	clubNotify.ClubID = &clubID
 	// 发送通知
 	sendClubNotify(userIDs, clubNotify)
 

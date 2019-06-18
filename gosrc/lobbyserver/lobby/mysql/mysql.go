@@ -104,6 +104,10 @@ func (*mySQLUtil) LoadUserDiamond(userID string) int64 {
 	return loadUserDiamond(userID)
 }
 
+func (*mySQLUtil) CountClubUser(clubID string) int {
+	return countClubUser(clubID)
+}
+
 // errCode = 1 参数错误, 0 成功
 func (*mySQLUtil) RenameClub(clubID string, clubName string) (errCode int) {
 	return renameClub(clubID, clubName)
