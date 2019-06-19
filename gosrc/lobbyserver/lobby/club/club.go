@@ -61,6 +61,10 @@ func loadAllClub() {
 			if !ok {
 				club = newBaseClub(clubInfo, clubID)
 				clubMgr.clubs[clubID] = club
+
+				// TODO: load club members
+				members := mySQLUtil.LoadClubMembers(clubID)
+				club.mm = members.(map[string]*Member)
 			}
 		}
 
@@ -97,4 +101,5 @@ func InitWith() {
 	lobby.RegHTTPHandle("GET", "/changeRole", onSetClubMemberRole)
 	lobby.RegHTTPHandle("GET", "/loadClubMgrs", onLoadClubManagers)
 	lobby.RegHTTPHandle("GET", "/loadClub", onLoadClub)
+	lobby.RegHTTPHandle("GET", "/allowMemberCreateRoom", onAllowMemberCreateRoom)
 }

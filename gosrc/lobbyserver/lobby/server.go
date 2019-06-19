@@ -89,7 +89,6 @@ func acceptHTTPRequest() {
 	portStr := fmt.Sprintf(":%d", config.AccessoryServerPort)
 	c := cors.New(cors.Options{
 		AllowOriginFunc: func(origin string) bool {
-			log.Println("origin:", origin)
 			return true
 		},
 	})

@@ -32,6 +32,12 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		return
 	}
 
+	if memberID == "" {
+		log.Println("onSetClubMemberRole, need member id")
+		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
+		return
+	}
+
 	roleInt, _ := strconv.Atoi(role)
 	if roleInt != int(ClubRoleType_CRoleTypeMgr) && roleInt != int(ClubRoleType_CRoleTypeMember) {
 		log.Printf("onSetClubMemberRole, role %d not club member and mgr", roleInt)
@@ -39,15 +45,14 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		return
 	}
 
-	_, ok := clubMgr.clubs[clubID]
+	club, ok := clubMgr.clubs[clubID]
 	if !ok {
 		log.Println("onJoinClub, club not exist for clubID:", clubID)
 		sendGenericError(w, ClubOperError_CERR_Club_Not_Exist)
 		return
 	}
 
-	mySQLUtil := lobby.MySQLUtil()
-	myRole := mySQLUtil.LoadUserClubRole(userID, clubID)
+	myRole := clubMgr.getClubMemberRole(userID, clubID)
 	// 只有群主可以设管理员
 	if myRole != int32(ClubRoleType_CRoleTypeCreator) {
 		log.Printf("User %s not club %s creator, can change club member role", userID, clubID)
@@ -55,7 +60,7 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		return
 	}
 
-	memberRole := mySQLUtil.LoadUserClubRole(memberID, clubID)
+	memberRole := clubMgr.getClubMemberRole(memberID, clubID)
 	if memberRole == int32(ClubRoleType_CRoleTypeNone) {
 		log.Printf("member %s no in club %s, can not change role", memberID, clubID)
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
@@ -68,10 +73,14 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		return
 	}
 
+	mySQLUtil := lobby.MySQLUtil()
 	errCode := mySQLUtil.ChangeClubMemberRole(memberID, clubID, int32(roleInt))
 	if errCode != 0 {
 		log.Error("db change club member role error errCode:", errCode)
 	}
+
+	member := club.mm[memberID]
+	member.Role = int32(roleInt)
 
 	conn := lobby.Pool().Get()
 	defer conn.Close()

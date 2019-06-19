@@ -37,6 +37,15 @@ func onQuit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
+	club, ok := clubMgr.clubs[clubID]
+	if !ok {
+		log.Println("onJoinClub, club not exist for clubID:", clubID)
+		sendGenericError(w, ClubOperError_CERR_Club_Not_Exist)
+		return
+	}
+
+	delete(club.mm, userID)
+
 	mySQLUtil := lobby.MySQLUtil()
 	mySQLUtil.RemoveUserFromClub(userID, clubID)
 
@@ -58,9 +67,8 @@ func isQuitAble(clubID string, userID string, w http.ResponseWriter) bool {
 	}
 
 	// 判断用户是否在牌友圈中
-	mySQLUtil := lobby.MySQLUtil()
-	role := mySQLUtil.LoadUserClubRole(userID, clubID)
-	if role == int32(ClubRoleType_CRoleTypeNone) {
+	_, ok = club.mm[userID]
+	if !ok {
 		log.Printf("isQuitAble, user %s not in club %s", userID, clubID)
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
 		return false

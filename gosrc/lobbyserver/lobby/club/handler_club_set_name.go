@@ -47,14 +47,14 @@ func onSetName(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	mySQLUtil := lobby.MySQLUtil()
-	role := mySQLUtil.LoadUserClubRole(userID, clubID)
+	role := clubMgr.getClubMemberRole(userID, clubID)
 	// 只有群主和管理员可以设置群
 	if role != int32(ClubRoleType_CRoleTypeCreator) && role != int32(ClubRoleType_CRoleTypeMgr) {
 		sendGenericError(w, ClubOperError_CERR_Club_Only_Owner_And_Mgr_Can_Set)
 		return
 	}
 
+	mySQLUtil := lobby.MySQLUtil()
 	errCode := mySQLUtil.RenameClub(clubID, clname)
 	if errCode != 0 {
 		log.Error("db rename club error, errCode:", errCode)

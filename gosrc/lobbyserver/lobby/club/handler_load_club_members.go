@@ -47,26 +47,17 @@ func onLoadClubMembers(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		return
 	}
 
-	mySQLUtil := lobby.MySQLUtil()
-	role := mySQLUtil.LoadUserClubRole(userID, clubID)
+	role := clubMgr.getClubMemberRole(userID, clubID)
 	if role == int32(ClubRoleType_CRoleTypeNone) {
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
 		return
 	}
 
-	memberIDs := mySQLUtil.LoadClubUserIDs(clubID)
+	memberIDs := clubMgr.getClubMembeIDs(clubID)
 
 	// 获得redis连接
 	conn := lobby.Pool().Get()
 	defer conn.Close()
-
-	// // 检查是否可以加载
-	// if !isUserClubMember(clubID, userID, w) {
-	// 	return
-	// }
-
-	// 得到的member IDs
-	// memberIDs, newCusor := club.membersSscan(cursor)
 
 	loadMemberReply := &MsgClubLoadMembersReply{}
 	newCusor32 := int32(0)
@@ -125,6 +116,10 @@ func constructClubMemberList(memberIDs []string, conn redis.Conn, club *Club) []
 		memberInfo.UserID = &userID
 		memberInfo.DisplayInfo = displayInfo
 
+		role := club.mm[userID].Role
+		isAllowCreateRoom := club.mm[userID].IsAllowCreateRoom
+		memberInfo.Role = &role
+		memberInfo.AllowCreateRoom = &isAllowCreateRoom
 		// online := club.isMemberOnline(userID)
 		// memberInfo.Online = &online
 

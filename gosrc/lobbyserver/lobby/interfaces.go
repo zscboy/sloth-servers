@@ -197,6 +197,8 @@ type IMySQLUtil interface {
 	RenameClub(clubID string, clubName string) (errCode int)
 	ChangeClubMemberRole(memberID string, clubID string, role int32) (errCode int)
 	CountClubUser(clubID string) int
+	LoadClubMembers(clubID string) interface{}
+	AllowMemberCreateRoom(memberID string, clubID string, permission int32)  (errCode int)
 }
 
 // IUpdateUtil update utility

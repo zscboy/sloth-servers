@@ -118,6 +118,14 @@ func (*mySQLUtil) ChangeClubMemberRole(memberID string, clubID string, role int3
 	return changeClubMemberRole(memberID, clubID, role)
 }
 
+func (*mySQLUtil) LoadClubMembers(clubID string) interface{} {
+	return loadClubMembers(clubID)
+}
+
+// errCode = 1 参数错误, 0 成功
+func (*mySQLUtil) AllowMemberCreateRoom(memberID string, clubID string, permission int32)  (errCode int) {
+	return allowMemberCreateRoom(memberID, clubID, permission)
+}
 // InitWith init
 func InitWith() {
 	lobby.SetMySQLUtil(sqlUtil)

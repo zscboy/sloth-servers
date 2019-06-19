@@ -42,8 +42,9 @@ func onJoinClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	role := mySQLUtil.LoadUserClubRole(userID, clubID)
-	if role != int32(ClubRoleType_CRoleTypeNone) {
+	_, ok = club.mm[userID]
+	if ok {
+		log.Printf("onJoinClub, user %s have been in club %s", userID, clubID)
 		sendGenericError(w, ClubOperError_CERR_Invitee_Already_In_Club)
 		return
 	}

@@ -44,6 +44,9 @@ func onLoadMyClubs(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 				club = newBaseClub(clubInfo.(*MsgClubInfo), cid)
 				clubMgr.clubs[cid] = club
+
+				members := mySQLUtil.LoadClubMembers(cid)
+				club.mm = members.(map[string]*Member)
 			}
 
 			// clubInfo := club.constructMsgClubInfo()

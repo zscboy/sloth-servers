@@ -48,6 +48,12 @@ func onKickOut(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
+	_, ok = club.mm[memberID]
+	if ok {
+		delete(club.mm, memberID)
+	}
+
+
 	mySQLUtil := lobby.MySQLUtil()
 	errCode := mySQLUtil.RemoveUserFromClub(memberID, clubID)
 	if errCode != 0 {
@@ -85,8 +91,7 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 		return false
 	}
 
-	mySQLUtil := lobby.MySQLUtil()
-	myRole := mySQLUtil.LoadUserClubRole(userID, clubID)
+	myRole := clubMgr.getClubMemberRole(userID, clubID)
 	// 只有群主和管理员才可以踢人
 	if myRole != int32(ClubRoleType_CRoleTypeCreator) && myRole != int32(ClubRoleType_CRoleTypeMgr) {
 		log.Printf("onKickOut, club:%s, userID:%s, only creator can kickout member\n", clubID, userID)
@@ -94,7 +99,7 @@ func isKickOutAble(clubID string, conn redis.Conn, userID string, w http.Respons
 		return false
 	}
 
-	memberRole := mySQLUtil.LoadUserClubRole(memberID, clubID)
+	memberRole := clubMgr.getClubMemberRole(memberID, clubID)
 	if memberRole == int32(ClubRoleType_CRoleTypeNone) {
 		log.Printf("member %s not in club %s", memberID, clubID)
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)

@@ -91,9 +91,10 @@ clubID 是牌友圈ID
 返回: lobby.MsgLoadRoomListRsp
 
 11. 删除牌友圈房间
-url: /lobby/uuid/loadClubRooms?tk=xxx&clubID=xxx
+url: /lobby/uuid/deleteClubRoom?tk=xxx&clubID=xxx&roomID=xxx
 tk 是token
 clubID 是牌友圈ID
+roomID 房间ID
 
 返回：lobby.MsgDeleteRoomReply
 
@@ -179,3 +180,10 @@ message MsgClubInfo
 	optional int32 memberCount = 13; // 当前人数
 	repeated string managers = 14; // 管理员列表
 }
+
+19. 允许成员创建房间
+url : /lobby/uuid/allowMemberCreateRoom?tk=xxx&clubID=xxx&memberID=xxx&allowCreateRoom=xx
+tk 是token
+clubID 是牌友群ID
+memberID 指定位管理员的群成员的ID
+allowCreateRoom 为yes表示允许创建房间，为no表示不可以创建房间

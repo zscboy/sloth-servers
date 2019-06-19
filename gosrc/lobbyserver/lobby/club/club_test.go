@@ -29,11 +29,12 @@ func TestSomething(t *testing.T) {
 	// testCreateClubRoom("10000002")
 	// testLoadClubRooms("10000002")
 	// testDeleteClubRoom("10000002")
-	testLoadMyApplyEvent("10000020")
+	// testLoadMyApplyEvent("10000020")
 	// renameClub("10000019", "4088fc70-8e50-11e9-8fea-107b445225b6", "哈哈哈")
 	// kickOutMember("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
 	// changeClubMemberRole("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020", int(ClubRoleType_CRoleTypeMgr))
 	// loadClubManagers("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6")
+	allowMemberCreateRoom("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
 
 }
 
@@ -863,6 +864,68 @@ func changeClubMemberRole(id string, clubID string, memberID string, role int) {
 func loadClubManagers(id string, clubID string) {
 	tk := lobby.GenTK(id)
 	var url = "http://localhost:3002/lobby/uuid/loadClubMgrs?tk=" + tk + "&clubID=" + clubID
+	client := &http.Client{Timeout: time.Second * 60}
+	req, err := http.NewRequest("GET", url, nil)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("err: ", err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		log.Println("resp.StatusCode != 200, resp.StatusCode:", resp.StatusCode)
+		return
+	}
+
+	errcode := resp.Header.Get("error")
+	if errcode != "" {
+		log.Println("errorcode: ", errcode)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("handlerChat error:", err)
+		return
+	}
+
+	msgClubReply := &MsgClubReply{}
+	err = proto.Unmarshal(body, msgClubReply)
+	if err != nil {
+		log.Println("err:", err)
+	}
+
+	if msgClubReply.GetReplyCode() == int32(ClubReplyCode_RCError) {
+		genericRely := &MsgCubOperGenericReply{}
+		err = proto.Unmarshal(msgClubReply.GetContent(), genericRely)
+		if err != nil {
+			log.Println("parse error:", err)
+		}
+
+		log.Println("errCode:", genericRely.GetErrorCode())
+		return
+	}
+
+	buf := msgClubReply.GetContent()
+	if len(buf) == 0 {
+		log.Println("len(buf) == 0")
+		return
+	}
+
+	reply := &MsgClubLoadMembersReply{}
+	err = proto.Unmarshal(buf, reply)
+	if err != nil {
+		log.Println("parse error:", err)
+	}
+
+	log.Println("reply:", reply)
+}
+
+
+func allowMemberCreateRoom(id string, clubID string, memberID string) {
+	tk := lobby.GenTK(id)
+	var url = "http://localhost:3002/lobby/uuid/allowMemberCreateRoom?tk=" + tk + "&clubID=" + clubID +"&memberID=" + memberID + "&allowCreateRoom=yes"
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("GET", url, nil)
 

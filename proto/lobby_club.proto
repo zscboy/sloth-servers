@@ -24,6 +24,8 @@ message MsgClubMemberInfo
     required string userID = 1; // userID
     optional MsgClubDisplayInfo displayInfo = 2; // 显示用
     optional bool online = 3; // 是否在线
+    optional int32 role = 4; // 角色
+    optional bool allowCreateRoom = 5; // 是否允许创建房间
 }
 
 // 俱乐部的基本信息
@@ -174,6 +176,7 @@ message MsgClubNotify
     optional string clubID = 2; // 牌友群ID
 	optional bytes content = 3; // 牌友群通知内容
 }
+
 
 // 大赢家信息
 // message MsgClubGreatWinner

@@ -41,8 +41,7 @@ func onLoadClubManagers(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	mySQLUtil := lobby.MySQLUtil()
-	role := mySQLUtil.LoadUserClubRole(userID, clubID)
+	role := clubMgr.getClubMemberRole(userID, clubID)
 	if role == int32(ClubRoleType_CRoleTypeNone) {
 		sendGenericError(w, ClubOperError_CERR_User_Not_In_Club)
 		return

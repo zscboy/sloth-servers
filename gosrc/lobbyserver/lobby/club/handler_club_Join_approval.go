@@ -56,8 +56,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	clubInfo := club.clubInfo
 
-	mySQLUtil := lobby.MySQLUtil()
-	role := mySQLUtil.LoadUserClubRole(applicantID, clubID)
+	role := clubMgr.getClubMemberRole(applicantID, clubID)
 	if role != int32(ClubRoleType_CRoleTypeNone) {
 		sendGenericError(w, ClubOperError_CERR_Invitee_Already_In_Club)
 		return
@@ -73,7 +72,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	}
 
 	// 只有部长才可以批准或者拒绝
-	role = mySQLUtil.LoadUserClubRole(userID, clubID)
+	role = clubMgr.getClubMemberRole(userID, clubID)
 	if role != int32(ClubRoleType_CRoleTypeCreator) && role != int32(ClubRoleType_CRoleTypeMgr) {
 		log.Printf("onJoinApprove, userID %s not creator and mgr %s\n", userID, clubInfo.GetCreatorUserID())
 		sendGenericError(w, ClubOperError_CERR_Only_Creator_And_Mgr_Can_Approve)
@@ -115,7 +114,7 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	} else {
 		// 检查玩家是否可以加入俱乐部
 		// 检查玩家已经加入过的俱乐部个数
-		maxJoin := mySQLUtil.CountUserClubNumber(userID)
+		maxJoin := len(club.mm)
 		if int32(maxJoin) < clubInfo.GetMaxMember() {
 			// 清理事件
 			_, err := conn.Do("SADD", gconst.LobbyClubMemberSetPrefix+clubID, applicantID)
@@ -123,7 +122,14 @@ func onJoinApprove(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 				log.Panicln("save applicant's club info redis failed:", err)
 			}
 
+			mySQLUtil := lobby.MySQLUtil()
 			mySQLUtil.AddUserToClub(applicantID, clubID, int32(ClubRoleType_CRoleTypeMember))
+
+			member := &Member{}
+			member.Role = int32(ClubRoleType_CRoleTypeMember)
+			member.IsAllowCreateRoom = false
+
+			club.mm[applicantID] = member
 
 			// 生成玩家加入俱乐部事件
 			// newJoinEvent(clubID, applicantID, conn)
