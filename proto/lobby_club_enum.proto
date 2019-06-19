@@ -81,4 +81,7 @@ enum ClubNotifyType
 {
 	CNotify_None = 0; // 无效事件
 	CNotify_Change_Member_Role = 1; // 成员角色改变
+    CNotify_Allow_Member_Create_Room = 2; // 是否允许成员创建房间
+    CNotify_New_Member_Apply = 3; // 有新成员申请加入房间
+    CNotify_Member_Join_Approval = 4; // 批准成员加入
 }
