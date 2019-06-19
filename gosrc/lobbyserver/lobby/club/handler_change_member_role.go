@@ -79,8 +79,14 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		log.Error("db change club member role error errCode:", errCode)
 	}
 
+	isAllowCreateRoom := false
+	if int32(roleInt) == int32(ClubRoleType_CRoleTypeMgr) {
+		isAllowCreateRoom = true
+	}
+
 	member := club.mm[memberID]
 	member.Role = int32(roleInt)
+	member.IsAllowCreateRoom = isAllowCreateRoom
 
 	conn := lobby.Pool().Get()
 	defer conn.Close()

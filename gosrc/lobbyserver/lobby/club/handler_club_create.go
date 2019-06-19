@@ -74,6 +74,12 @@ func onCreateClub(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 		clubMgr.clubs[club.ID] = club
 	}
 
+	member := &Member{}
+	member.Role = int32(ClubRoleType_CRoleTypeCreator)
+	member.IsAllowCreateRoom = true
+
+	club.mm[userID] = member
+
 	cr := &MsgCreateClubReply{}
 	cr.ClubInfo = clubInfo
 

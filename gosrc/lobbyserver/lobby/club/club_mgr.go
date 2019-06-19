@@ -1,6 +1,7 @@
 package club
 
 import (
+	log "github.com/sirupsen/logrus"
 )
 
 // Member 牌友群成员
@@ -56,11 +57,13 @@ func (mgr *MyClubMgr) getClubMembeIDs(clubID string) []string {
 func (mgr *MyClubMgr) getClubMemberRole(memberID string, clubID string) int32 {
 	club, ok := clubMgr.clubs[clubID]
 	if !ok {
+		log.Printf("getClubMemberRole, club %s not exist", clubID)
 		return int32(ClubRoleType_CRoleTypeNone)
 	}
 
 	member, ok := club.mm[memberID]
 	if !ok {
+		log.Printf("getClubMemberRole, member %s not in club %s", memberID, clubID)
 		return int32(ClubRoleType_CRoleTypeNone)
 	}
 
@@ -90,9 +93,9 @@ func (mgr *MyClubMgr) IsUserPermisionCreateRoom(userID string, clubID string) bo
 		return false
 	}
 
-	if member.Role == int32(ClubRoleType_CRoleTypeCreator) || member.Role == int32(ClubRoleType_CRoleTypeMgr) {
-		return true
-	}
+	// if member.Role == int32(ClubRoleType_CRoleTypeCreator) || member.Role == int32(ClubRoleType_CRoleTypeMgr) {
+	// 	return true
+	// }
 
 	if member.IsAllowCreateRoom {
 		return true
