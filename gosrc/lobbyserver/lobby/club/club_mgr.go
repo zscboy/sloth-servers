@@ -93,9 +93,9 @@ func (mgr *MyClubMgr) IsUserPermisionCreateRoom(userID string, clubID string) bo
 		return false
 	}
 
-	// if member.Role == int32(ClubRoleType_CRoleTypeCreator) || member.Role == int32(ClubRoleType_CRoleTypeMgr) {
-	// 	return true
-	// }
+	if member.Role == int32(ClubRoleType_CRoleTypeCreator) || member.Role == int32(ClubRoleType_CRoleTypeMgr) {
+		return true
+	}
 
 	if member.IsAllowCreateRoom {
 		return true
