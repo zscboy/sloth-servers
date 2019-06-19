@@ -131,6 +131,8 @@ enum ClubRoleType
     CRoleTypeMgr = 3; // 管理者
 }
 
+返回被修改成员的信息：MsgClubMemberInfo
+
 
 16. 拉取管理员信息列表
 url: /lobby/uuid/loadClubMgrs?tk=xxx&clubID=xxx
@@ -187,3 +189,5 @@ tk 是token
 clubID 是牌友群ID
 memberID 指定位管理员的群成员的ID
 allowCreateRoom 为yes表示允许创建房间，为no表示不可以创建房间
+
+返回被修改成员的信息：MsgClubMemberInfo

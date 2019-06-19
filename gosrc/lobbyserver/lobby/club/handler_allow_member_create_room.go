@@ -5,7 +5,52 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
+	"github.com/garyburd/redigo/redis"
+	proto "github.com/golang/protobuf/proto"
+	"gconst"
+	"strconv"
 )
+
+func replyMemberInfo(memberID string, club *Club, w http.ResponseWriter,) {
+	conn := lobby.Pool().Get()
+	defer conn.Close()
+
+	strValues, err := redis.Strings(conn.Do("HMGET", gconst.LobbyUserTablePrefix+memberID, "Nick", "Gender", "Protrait", "AvatarID"))
+	if err != nil {
+		log.Errorf("Redis get member %s info error %v", memberID, err)
+		return
+	}
+
+	displayInfo := &MsgClubDisplayInfo{}
+	nick := strValues[0]
+	displayInfo.Nick = &nick
+	gender, _ := strconv.Atoi(strValues[1])
+	sex32 := uint32(gender)
+	displayInfo.Gender = &sex32
+	headIconURL := strValues[2]
+	displayInfo.HeadIconURL = &headIconURL
+	avatarID, _ := strconv.Atoi(strValues[3])
+	avatarID32 := int32(avatarID)
+	displayInfo.AvatarID = &avatarID32
+
+	memberInfo := &MsgClubMemberInfo{}
+	memberInfo.UserID = &memberID
+	memberInfo.DisplayInfo = displayInfo
+
+	role := club.mm[memberID].Role
+	isAllowCreateRoom := club.mm[memberID].IsAllowCreateRoom
+	memberInfo.Role = &role
+	memberInfo.AllowCreateRoom = &isAllowCreateRoom
+
+	b, err := proto.Marshal(memberInfo)
+	if err != nil {
+		log.Println("onLoadClubMembers, marshal error:", err)
+		sendGenericError(w, ClubOperError_CERR_Encode_Decode)
+		return
+	}
+
+	sendMsgClubReply(w, ClubReplyCode_RCOperation, b)
+}
 
 // onSetName 更新俱乐部的名称
 func onAllowMemberCreateRoom(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -91,5 +136,7 @@ func onAllowMemberCreateRoom(w http.ResponseWriter, r *http.Request, ps httprout
 	sendClubNotify(userIDs, clubNotify)
 
 	// 操作成功
-	sendGenericError(w, ClubOperError_CERR_OK)
+	// sendGenericError(w, ClubOperError_CERR_OK)
+
+	replyMemberInfo(memberID, club, w)
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
+
 )
 
 // onSetName 更新俱乐部的名称
@@ -101,5 +102,7 @@ func onSetClubMemberRole(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	sendClubNotify(userIDs, clubNotify)
 
 	// 操作成功
-	sendGenericError(w, ClubOperError_CERR_OK)
+	// sendGenericError(w, ClubOperError_CERR_OK)
+
+	replyMemberInfo(memberID, club, w)
 }
