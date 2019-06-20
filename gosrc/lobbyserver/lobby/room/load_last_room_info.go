@@ -15,6 +15,7 @@ func getPropCfg(roomType int) string {
 	return donateUtil.GetRoomPropsCfg(roomType)
 }
 
+// 注意，如果多个房间同时解散，此算法还是会获取到解散房间的roomID
 func loadUserLastEnterRoomID(userID string) string {
 	log.Println("loadUserLastEnterRoomID, userID:", userID)
 	var timeAsLeave = 6 * 60 * 60
@@ -70,6 +71,11 @@ func loadLastRoomInfo(userID string) *lobby.RoomInfo {
 
 	conn := lobby.Pool().Get()
 	defer conn.Close()
+
+	exist, _ := redis.Int(conn.Do("EXISTS", gconst.LobbyRoomTablePrefix+enterRoomID))
+	if exist == 0 {
+		return nil
+	}
 
 	values, err := redis.Strings(conn.Do("HMGET", gconst.LobbyRoomTablePrefix+enterRoomID, "roomNumber", "roomConfigID", "gameServerID", "roomType", "arenaID", "raceTemplateID"))
 	if err != nil {
