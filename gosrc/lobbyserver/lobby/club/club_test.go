@@ -34,7 +34,8 @@ func TestSomething(t *testing.T) {
 	// kickOutMember("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
 	// changeClubMemberRole("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020", int(ClubRoleType_CRoleTypeMgr))
 	// loadClubManagers("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6")
-	allowMemberCreateRoom("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
+	// allowMemberCreateRoom("10000019", "83f6aa30-8e63-11e9-8fea-107b445225b6", "10000020")
+	testSetRoomOptions("10000019", "d521d820-9265-11e9-8fea-107b445225b6", "{\"abc\":\"aaa\"}")
 
 }
 
@@ -976,6 +977,67 @@ func allowMemberCreateRoom(id string, clubID string, memberID string) {
 	}
 
 	reply := &MsgClubLoadMembersReply{}
+	err = proto.Unmarshal(buf, reply)
+	if err != nil {
+		log.Println("parse error:", err)
+	}
+
+	log.Println("reply:", reply)
+}
+
+func testSetRoomOptions(id string, clubID string, options string) {
+	tk := lobby.GenTK(id)
+	var url = "http://localhost:3002/lobby/uuid/setRoomOptions?tk=" + tk + "&clubID=" + clubID + "&options=" + options
+	client := &http.Client{Timeout: time.Second * 60}
+	req, err := http.NewRequest("GET", url, nil)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("err: ", err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		log.Println("resp.StatusCode != 200, resp.StatusCode:", resp.StatusCode)
+		return
+	}
+
+	errcode := resp.Header.Get("error")
+	if errcode != "" {
+		log.Println("errorcode: ", errcode)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("handlerChat error:", err)
+		return
+	}
+
+	msgClubReply := &MsgClubReply{}
+	err = proto.Unmarshal(body, msgClubReply)
+	if err != nil {
+		log.Println("err:", err)
+	}
+
+	if msgClubReply.GetReplyCode() == int32(ClubReplyCode_RCError) {
+		genericRely := &MsgCubOperGenericReply{}
+		err = proto.Unmarshal(msgClubReply.GetContent(), genericRely)
+		if err != nil {
+			log.Println("parse error:", err)
+		}
+
+		log.Println("errCode:", genericRely.GetErrorCode())
+		return
+	}
+
+	buf := msgClubReply.GetContent()
+	if len(buf) == 0 {
+		log.Println("len(buf) == 0")
+		return
+	}
+
+	reply := &MsgClubInfo{}
 	err = proto.Unmarshal(buf, reply)
 	if err != nil {
 		log.Println("parse error:", err)

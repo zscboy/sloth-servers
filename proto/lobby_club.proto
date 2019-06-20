@@ -55,11 +55,10 @@ message MsgClubInfo
     optional int32 maxMember = 7; // 最大成员数量
     optional bool joinForbit = 8; // 是否禁止玩家加入
     optional bool hasUnReadEvents = 9; // 是否有未读消息
-    optional int32 createRoomOption = 10; // 0 允许普通玩家开启房间，1仅部长可以开房间
-    optional int32 payRoomOption = 11; // 创建房间时支付类型，0从基金支付，1是开房者设置（例如AA或者房主支付）
-    optional int32 createTime = 12; // 创建时间
-	optional int32 memberCount = 13; // 当前人数
-	repeated string managers = 14; // 管理员列表
+    optional string createRoomOptions = 10; // 快速创建房间选项
+	optional int32 memberCount = 11; // 当前人数
+	repeated string managers = 12; // 管理员列表
+    optional int32 createTime = 13; // 创建时间
 }
 
 // 加载自己的俱乐部
@@ -177,6 +176,10 @@ message MsgClubNotify
 	optional bytes content = 3; // 牌友群通知内容
 }
 
+message MsgClubSetRoomOptions
+{
+    required string options = 1; // 建房选项
+}
 
 // 大赢家信息
 // message MsgClubGreatWinner

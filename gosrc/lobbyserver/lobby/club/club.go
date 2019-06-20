@@ -102,4 +102,5 @@ func InitWith() {
 	lobby.RegHTTPHandle("GET", "/loadClubMgrs", onLoadClubManagers)
 	lobby.RegHTTPHandle("GET", "/loadClub", onLoadClub)
 	lobby.RegHTTPHandle("GET", "/allowMemberCreateRoom", onAllowMemberCreateRoom)
+	lobby.RegHTTPHandle("GET", "/setRoomOptions", onSetRoomOptions)
 }

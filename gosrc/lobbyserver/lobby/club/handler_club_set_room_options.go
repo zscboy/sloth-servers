@@ -3,21 +3,21 @@ package club
 import (
 	"log"
 	"net/http"
-	"crypto/md5"
-	"fmt"
 	"gconst"
 	"lobbyserver/lobby"
-	"github.com/garyburd/redigo/redis"
 	proto "github.com/golang/protobuf/proto"
+	"github.com/julienschmidt/httprouter"
 )
 
 // onSetRoomOptions 更新俱乐部的游戏房间设置
-func onSetRoomOptions(w http.ResponseWriter, r *http.Request, userID string) {
+func onSetRoomOptions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	userID := ps.ByName("userID")
+
 	log.Println("onSetRoomOptions, userID:", userID)
 
 	var query = r.URL.Query()
 	clubID := query.Get("clubID")
-	roomConfigStr := query.Get("roomConfig") // 创建房间的选项
+	optionsStr := query.Get("options") // 创建房间的选项
 	// payRoomOptionStr := query.Get("payOption")   // 支付选项
 
 	if clubID == "" {
@@ -26,45 +26,25 @@ func onSetRoomOptions(w http.ResponseWriter, r *http.Request, userID string) {
 		return
 	}
 
-	if roomConfigStr == "" {
-		log.Println("onSetRoomOptions, need a valid croption")
+	if optionsStr == "" {
+		log.Println("onSetRoomOptions, need a valid options")
 		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
 		return
 	}
 
 	club, ok := clubMgr.clubs[clubID]
 	if !ok {
-		log.Printf("onJoinApprove, club %s not found", clubID)
+		log.Printf("onSetRoomOptions, club %s not found", clubID)
 		sendGenericError(w, ClubOperError_CERR_Invalid_Input_Parameter)
 		return
 	}
 
-	bytes := []byte(roomConfigStr)
-	md5Value := md5.Sum(bytes)
-	roomConfigID := fmt.Sprintf("%x", md5Value)
+	clubInfo := club.clubInfo
+	clubInfo.CreateRoomOptions = &optionsStr
 
-	// 获得redis连接
 	conn := lobby.Pool().Get()
 	defer conn.Close()
-
-	result, _ := redis.Int(conn.Do("HEXISTS", gconst.LobbyRoomConfigTable, roomConfigID))
-	if result != 1 {
-		_, err := conn.Do("HSET", gconst.LobbyRoomConfigTable, roomConfigID, bytes)
-		if err != nil {
-			log.Println("save club room config err:", err)
-			return
-		}
-	}
-
-	_, exist := lobby.RoomConfigs[roomConfigID]
-	if !exist {
-		lobby.RoomConfigs[roomConfigID] = roomConfigStr
-	}
-
-	conn.Do("HSET", gconst.LobbyClubconfig + clubID, "roomConfigID", roomConfigID)
-
-
-	clubInfo := club.clubInfo
+	conn.Do("HSET", gconst.LobbyClubconfig + clubID, "options", optionsStr)
 
 	b, err := proto.Marshal(clubInfo)
 	if err != nil {
