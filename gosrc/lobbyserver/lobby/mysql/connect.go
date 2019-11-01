@@ -24,7 +24,7 @@ type DBConfig struct {
 func newDbConnect(ip string, port int, user string, password string, database string) (*sql.DB, error) {
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?", user, password, ip, port, database)
 
-	log.Printf("mysql connString:%s\n", connString)
+	// log.Printf("mysql connString:%s\n", connString)
 	dbCon, err := sql.Open("mysql", connString)
 	if err != nil {
 		log.Println("Open mssql connection failed:", err.Error())

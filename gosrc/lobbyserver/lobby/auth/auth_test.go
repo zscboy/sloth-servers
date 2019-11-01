@@ -12,7 +12,8 @@ import (
 )
 
 func TestAuth(t *testing.T) {
-	testWxLogin()
+	// testWxLogin()
+	testNativeWxLogin()
 }
 
 func testWxLogin() {
@@ -36,6 +37,45 @@ func testWxLogin() {
 
 	client := &http.Client{Timeout: time.Second * 60}
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(buf))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("err: ", err)
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		log.Println("resp.StatusCode != 200, resp.StatusCode:", resp.StatusCode)
+		return
+	}
+
+	errcode := resp.Header.Get("error")
+	if errcode != "" {
+		log.Println("errorcode: ", errcode)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("handlerChat error:", err)
+		return
+	}
+
+	msgLoginReply := &lobby.MsgLoginReply{}
+	err = proto.Unmarshal(body, msgLoginReply)
+	if err != nil {
+		log.Println("err:", err)
+	}
+
+
+	log.Println("msgLoginReply:", msgLoginReply)
+}
+
+func testNativeWxLogin() {
+	var url = "http://localhost:30002/lobby/uuid/nativeWxLogin?code=061QyJpH0eaOfg2pQloH0M2CpH0QyJpc"
+
+	client := &http.Client{Timeout: time.Second * 60}
+	req, err := http.NewRequest("GET", url, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {

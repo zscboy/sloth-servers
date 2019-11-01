@@ -12,6 +12,7 @@ import (
 )
 
 // LoadAccessTokenFromWeChatServer 从wechat服务器加载access token
+// 微信公众平台拉取AccessToken
 func LoadAccessTokenFromWeChatServer(wechatCode string) (*LoadAccessTokenReply, error) {
 	urlGetAccessToken := fmt.Sprintf(urlWeChatGetAccessToken, weChatAPPID, weChatAPPSecret, wechatCode)
 	log.Println("loadAccessTokenFromWeChatServer, full url:", urlGetAccessToken)
@@ -25,6 +26,37 @@ func LoadAccessTokenFromWeChatServer(wechatCode string) (*LoadAccessTokenReply, 
 	log.Printf("loadAccessTokenFromWeChatServer, reply json:%+v\n", reply)
 	return reply, nil
 }
+
+// LoadNativeAccessTokenFromWeChatServer 微信开放平台拉取accessToken
+func LoadNativeAccessTokenFromWeChatServer(wechatCode string) (*LoadAccessTokenReply, error) {
+	urlGetAccessToken := fmt.Sprintf(urlWeChatNativeCodeGetAccessToken, nativeWeChatAPPID, nativeWeChatAPPSecret, wechatCode)
+	log.Println("LoadNativeAccessTokenFromWeChatServer, full url:", urlGetAccessToken)
+
+	reply := &LoadAccessTokenReply{}
+	err := loadDataUseHTTPGet(urlGetAccessToken, reply)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("loadAccessTokenFromWeChatServer, reply json:%+v\n", reply)
+	return reply, nil
+}
+
+// GetWeiXinUserInfoFromAccessToken 微信开放平台拉取用户信息
+func GetWeiXinUserInfoFromAccessToken(accessToken string, openID string) (*LoadUserInfoReply, error) {
+	urlGetUserInfo := fmt.Sprintf(urlWeChatGetUserInfo, accessToken, openID)
+	log.Println("GetWeiXinUserInfoFromAccessToken, full url:", urlGetUserInfo)
+
+	reply := &LoadUserInfoReply{}
+	err := loadDataUseHTTPGet(urlGetUserInfo, reply)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("loadAccessTokenFromWeChatServer, reply json:%+v\n", reply)
+	return reply, nil
+}
+
 
 // GetWeiXinPlusUserInfo 获取用户信息
 func GetWeiXinPlusUserInfo(sessionkey string, encrypteddata string, iv string) (*WeiXinUserPlusInfo, error) {
@@ -111,6 +143,9 @@ func loadDataUseHTTPGet(url string, jsonStruct interface{}) error {
 	// 确保body关闭
 	defer resp.Body.Close()
 
+	// htmlData, err := ioutil.ReadAll(resp.Body) //<--- here!
+
+	// log.Println("loadDataUseHTTPGet, body:", string(htmlData))
 	decoder := json.NewDecoder(resp.Body)
 	err = decoder.Decode(jsonStruct)
 	return err

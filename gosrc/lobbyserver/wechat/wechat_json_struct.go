@@ -12,29 +12,32 @@ package wechat
 // 	ErrorMsg  string `json:"errmsg"`
 // }
 
-// // LoadUserInfoReply 微信拉取user info回复
-// type LoadUserInfoReply struct {
-// 	OpenID     string   `json:"openid"`
-// 	NickName   string   `json:"nickname"`
-// 	Gender     int      `json:"gender"`
-// 	Province   string   `json:"province"`
-// 	City       string   `json:"city"`
-// 	Country    string   `json:"country"`
-// 	HeadImgURL string   `json:"headimgurl"`
-// 	Privilege  []string `json:"privilege"`
-// 	UnionID    string   `json:"unionid"`
-// 	Tags       string   `json:"tags"`
-// 	Thumb      int      `json:"thumb"`
+// LoadUserInfoReply 微信拉取user info回复
+type LoadUserInfoReply struct {
+	OpenID     string   `json:"openid"`
+	NickName   string   `json:"nickname"`
+	Gender     int      `json:"sex"`
+	Province   string   `json:"province"`
+	City       string   `json:"city"`
+	Country    string   `json:"country"`
+	HeadImgURL string   `json:"headimgurl"`
+	Privilege  []string `json:"privilege"`
+	UnionID    string   `json:"unionid"`
+	Tags       string   `json:"tags"`
+	Thumb      int      `json:"thumb"`
 
-// 	ErrorCode int    `json:"errcode"`
-// 	ErrorMsg  string `json:"errmsg"`
-// }
+	ErrorCode int    `json:"errcode"`
+	ErrorMsg  string `json:"errmsg"`
+}
 
 // LoadAccessTokenReply 微信拉取access token回复
 type LoadAccessTokenReply struct {
 	SessionKey string `json:"session_key"`
 	OpenID     string `json:"openid"`
 	UnionID    string `json:"unionid"`
+
+	AccessToken string `json:"access_token"`
+	Scope string `json:"scope"`
 
 	ErrorCode int    `json:"errcode"`
 	ErrorMsg  string `json:"errmsg"`
