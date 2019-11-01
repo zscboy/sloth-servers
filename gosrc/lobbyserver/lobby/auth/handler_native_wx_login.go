@@ -57,6 +57,16 @@ func handlerNativeWxLogin(w http.ResponseWriter, r *http.Request, _ httprouter.P
 		return
 	}
 
+	if userInfoReply.ErrorCode != 0 {
+		log.Errorf("userInfoReply:%v", userInfoReply)
+		errCode := int32(lobby.LoginError_ErrWxAuthFailed)
+		loginReply.Result = &errCode
+		replyWxLogin(w, loginReply)
+
+		return
+
+	}
+
 	userInfo := weiXinUserInfo2UserInof(userInfoReply)
 
 	qMod := r.URL.Query().Get("qMod")
@@ -106,5 +116,7 @@ func handlerNativeWxLogin(w http.ResponseWriter, r *http.Request, _ httprouter.P
 	loginReply.Token = &tk
 	loginReply.UserInfo = userInfo
 	loginReply.LastRoomInfo = lastRoomInfo
+
+	log.Println("handlerNativeWxLogin, replyWxLogin")
 	replyWxLogin(w, loginReply)
 }
